@@ -1,0 +1,230 @@
+!
+
+!
+version 16.9
+service timestamps debug datetime msec
+service timestamps log datetime msec
+platform qfp utilization monitor load 80
+no platform punt-keepalive disable-kernel-core
+platform console serial
+!
+hostname R3
+!
+boot-start-marker
+boot-end-marker
+!
+!
+!
+aaa new-model
+!
+!
+aaa authorization exec default local 
+!
+!
+!
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+no ip domain lookup
+ip domain name lab.com
+!
+!
+!
+login on-success log
+!
+!
+!
+!
+!
+!
+!
+subscriber templating
+! 
+! 
+! 
+! 
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+crypto pki trustpoint TP-self-signed-127870240
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-127870240
+ revocation-check none
+ rsakeypair TP-self-signed-127870240
+!
+crypto pki trustpoint TP-self-signed-1531356542
+ enrollment selfsigned
+ subject-name cn=IOS-Self-Signed-Certificate-1531356542
+ revocation-check none
+ rsakeypair TP-self-signed-1531356542
+!
+!
+crypto pki certificate chain TP-self-signed-127870240
+ certificate self-signed 01
+  3082032E 30820216 A0030201 02020101 300D0609 2A864886 F70D0101 05050030 
+  30312E30 2C060355 04031325 494F532D 53656C66 2D536967 6E65642D 43657274 
+  69666963 6174652D 31323738 37303234 30301E17 0D323230 32313131 32353632 
+  395A170D 33303031 30313030 30303030 5A303031 2E302C06 03550403 1325494F 
+  532D5365 6C662D53 69676E65 642D4365 72746966 69636174 652D3132 37383730 
+  32343030 82012230 0D06092A 864886F7 0D010101 05000382 010F0030 82010A02 
+  82010100 A55EE51D F04BD26D 63382B3E 63478FCB 898DA150 C04956A8 81B3C53E 
+  A61B2C77 9132FBB2 53214BB0 9179E861 9F5148DC CA0E20DC AB089B31 7FB67071 
+  396062CF B27F362C C1FCDD33 0A623841 D3076F38 3633765C ED426639 36AFDF7B 
+  936FBD72 503A642C 0F0442DA FD5AC6F1 47A2A683 A4FC4513 AD5449E3 B8701BCF 
+  910DE5CF 69ADD325 EA6FD5EE CD4F42D4 11E69E09 0BDCEE30 85B7E071 2195F877 
+  DE9728CA 073B8ACA 12621864 2647EFD1 C6597B32 AB69B98E FA6882EB DABCF0B6 
+  40F9764A ACE881BA A927387E D43A2C32 CAFAD884 6ABD53E9 E4EFCA1F BA572E69 
+  41E2E6FD B9BD17F3 A4339EF7 9E76251A 59F2C428 F50C3DF9 A26F8EB7 95E718A5 
+  527682A3 02030100 01A35330 51300F06 03551D13 0101FF04 05300301 01FF301F 
+  0603551D 23041830 168014D6 7010321A AAED7E47 221200DB 3F4CB523 AB3E8C30 
+  1D060355 1D0E0416 0414D670 10321AAA ED7E4722 1200DB3F 4CB523AB 3E8C300D 
+  06092A86 4886F70D 01010505 00038201 01003FC2 D0FED2FF 1D1C3F9C 84814424 
+  9AC43052 391E6F52 828839D5 1CE735D3 F128E758 288D3D12 73450A23 55D99277 
+  79255AA5 92B7B3E5 0650F70D B2FF633E 68D853C7 BD50D72F 7E80F836 57C15B3F 
+  1148A3B5 13FC1113 FF779356 F54F1D9B 9ED6A36F 9F6EEBEA 6A223F14 C230C219 
+  1E60DEBA 4AF15CCF D63C41A6 6DF70C76 E93C48D5 C77660C5 2E64BF20 D1436DCB 
+  C62397CB 20A125AE B30EDDDB 462FD06E D2569283 0F87A3F9 DDD7A737 951376F7 
+  01237479 C3AA9F1D 94E49376 F33832C9 04B88F2B D5B404AC AB63A845 0E60B921 
+  D0FF9138 0246C01C EC322135 15CC4DCD EF1DB047 10C25107 40E53AC7 B28E563F 
+  9258FD89 21C746AF 01DEC29B 26589660 B364
+  	quit
+crypto pki certificate chain TP-self-signed-1531356542
+!
+!
+!
+!
+!
+!
+!
+!
+license udi pid CSR1000V sn 904611LSQ1F
+no license smart enable
+diagnostic bootup level minimal
+!
+spanning-tree extend system-id
+archive
+ path flash:archive
+ write-memory
+!
+netconf-yang
+!
+!
+username giguerra privilege 15 secret 5 $1$EzVN$5Y9VIit5.pfpdNtmazMAF/
+!
+redundancy
+!
+!
+!
+!
+!
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+! 
+! 
+!
+!
+interface GigabitEthernet1
+ no ip address
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet2
+ ip address 10.0.0.1 255.255.255.252
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet3
+ ip address 10.1.2.254 255.255.255.0
+ shutdown
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet4
+ no ip address
+ negotiation auto
+ no mop enabled
+ no mop sysid
+!
+interface GigabitEthernet4.10
+ encapsulation dot1Q 10
+ ip address 192.168.10.254 255.255.255.0
+!
+interface GigabitEthernet4.20
+ encapsulation dot1Q 20
+ ip address 192.168.20.254 255.255.255.0
+!
+interface GigabitEthernet4.30
+ description interface Management Vlan
+ encapsulation dot1Q 30
+ ip address 172.16.1.254 255.255.255.0
+!
+router ospf 1
+ router-id 3.3.3.3
+ passive-interface GigabitEthernet4.10
+ passive-interface GigabitEthernet4.20
+ passive-interface GigabitEthernet4.30
+ network 10.0.0.0 0.0.0.3 area 0
+ network 172.16.1.0 0.0.0.255 area 0
+ network 192.168.10.0 0.0.0.255 area 0
+ network 192.168.20.0 0.0.0.255 area 0
+!
+ip forward-protocol nd
+ip http server
+ip http authentication local
+ip http secure-server
+!
+ip ssh version 2
+ip scp server enable
+!
+!
+!
+!
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+line con 0
+ logging synchronous
+ stopbits 1
+line vty 0 4
+ transport input telnet ssh
+!
+!
+!
+!
+!
+!
+end
