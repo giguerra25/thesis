@@ -7,6 +7,6 @@ passwd = 'cisco'
 
 bef = 'nochange_config'
 aft = 'change_config'
-#backup(device_list[0],user,passwd)
+#backup(device_list[1],user,passwd)
 
-restore(os.getcwd()+'/backup_config/'+aft,device_list[0],user,passwd)
+restore(os.getcwd()+'/backup_config/'+'R3',device_list[1],user,passwd)
