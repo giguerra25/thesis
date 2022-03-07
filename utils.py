@@ -1,6 +1,7 @@
-import datetime, os
+import datetime, os, shutil
 import xmltodict
-
+import routeros_api
+import ssl
 
 def createPathBackup(): 
     """
@@ -85,3 +86,41 @@ def stripTagXml(file):
 
 #dir = os.getcwd()+'/backup_config/'
 #stripTagXml(dir+'R3copy.xml')
+
+
+def moveFile(src,dst):
+
+    shutil.move(src,dst)
+
+
+
+def rosApi(ip,username,password,api_commands):
+
+        
+        try:
+            router = routeros_api.Api(ip, 
+                        user=username, 
+                        password=password, 
+                        use_ssl=True
+            )
+            
+        except ssl.SSLError:
+
+            context = ssl.create_default_context()  
+            context.check_hostname = False
+            context.set_ciphers('ADH:@SECLEVEL=0')
+
+            router = routeros_api.Api(ip, 
+                        user=username, 
+                        password=password, 
+                        use_ssl=True, 
+                        context=context
+            )
+            
+        try: 
+            data_dict = router.talk(api_commands)
+            return data_dict
+        except:  #if feature was not implemented on routeros_api 
+            data_dict = 'NotImplemented'
+            return data_dict
+
