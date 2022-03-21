@@ -1,8 +1,38 @@
 import datetime, os, shutil
+from pathlib import Path
 import xmltodict
 import routeros_api
 import ssl
+import math
 
+
+def create_pathdir(dir): 
+    """
+    Function returns the path ./db/<report_directory>/ of the directory. 
+    if it does not exist, it creates one.
+    """
+
+    pwd = os.getcwd()
+
+    try:
+        os.stat(pwd+dir)
+        
+    except:
+        Path(pwd+dir).mkdir(parents=True, exist_ok=True)
+    
+    return pwd + dir + '/'
+
+
+def createPathBackup():
+
+    path  = create_pathdir('/backup_config')
+
+    return path
+
+
+
+
+'''
 def createPathBackup(): 
     """
     Function returns the path of the directory to save backups. 
@@ -16,6 +46,7 @@ def createPathBackup():
         os.mkdir(pwd+'/backup_config')
     
     return pwd + '/backup_config/'
+'''
 
 
 def createNameBackup(ip):
@@ -123,4 +154,21 @@ def rosApi(ip,username,password,api_commands):
         except:  #if feature was not implemented on routeros_api 
             data_dict = 'NotImplemented'
             return data_dict
+
+
+
+def truncate(number, decimals=0):
+    """
+    Returns a value truncated to a specific number of decimal places.
+    """
+    if not isinstance(decimals, int):
+        raise TypeError("decimal places must be an integer.")
+    elif decimals < 0:
+        raise ValueError("decimal places has to be 0 or more.")
+    elif decimals == 0:
+        return math.trunc(number)
+
+    factor = 10.0 ** decimals
+    return math.trunc(number * factor) / factor
+
 
