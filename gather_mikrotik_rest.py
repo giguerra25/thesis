@@ -98,8 +98,6 @@ class GatherInventory(Gather):
             "Vendor":self.vendor()
         }
 
-        dir = '/db/inventory_report'
-
         id_db = self.send2db(self.ip,values,self.dir)
 
         return values, id_db

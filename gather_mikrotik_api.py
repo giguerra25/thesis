@@ -12,7 +12,6 @@ class Gather():
         self.ip = ip
         self.user = user
         self.passwd = passwd
-        self.url = 'https://'+ip+'/rest'
 
 
     def timestamp(self):
@@ -96,8 +95,6 @@ class GatherInventory(Gather):
             "Model": self.model(),
             "Vendor":self.vendor()
         }
-
-        dir = '/db/inventory_report'
 
         id_db = self.send2db(self.ip,values,self.dir)
 
