@@ -1,10 +1,83 @@
-from utils import ros_api
+from utils import rosApi, createNameBackup, createPathBackup
+import os
 
 
-device_list = ['10.0.0.2','10.0.0.6']
-user = 'giguerra'
-passwd = 'cisco'
 
-api_commands = '/ip/address/print'
+def backupSSLApi(ip,user,passwd):
 
-a = ros_api(device_list[1],user,passwd,api_commands)
+    filename =  createNameBackup(ip)
+
+    # Creation of a file .backup on the device
+    api_command = ('/system/backup/save', '=name='+filename)
+
+    response = rosApi(ip,user,passwd,api_command)
+    
+
+    #Collection of the content of the file .backup created.
+    path = createPathBackup()
+
+    api_command = (
+        "/tool/fetch",
+        "=upload=yes", 
+        "=url=sftp://172.16.1.1"+path+filename+".backup",
+        "=user=tftp",
+        "=password=tftp",
+        "=src-path="+filename+".backup"
+        )
+
+    response = rosApi(ip,user,passwd,api_command)
+    print(response)
+
+    
+    #Checking Finished status in API response
+    status = 0
+    for element in response:
+        if 'status' in element.keys() and element['status']=='finished':
+            status = 200
+
+    if status != 200:
+        print(response) # error from routeros_api
+        print('error getting backup of the device')
+        return
+    
+    #Deleting file .backup created on device
+    else: 
+        #Find ID of backup file
+        api_command = ('/file/print')
+        response = rosApi(ip,user,passwd,api_command)
+        id_file = ''
+        for element in response:
+            if 'name' in element.keys() and element['name']==filename+".backup":
+                id_file = element['.id']
+
+        print('deleting backup on device')
+        api_command = ('/file/remove', '=.id='+id_file)
+        response = rosApi(ip,user,passwd,api_command)
+        print(response)
+
+
+def restoreSSLApi(file,ip,user,passwd):
+    
+    path = os.path.dirname(file)
+    filename = os.path.basename(file)
+
+    # API request to get file .backup to device via SFTP
+
+    api_command = (
+        "/tool/fetch",
+        "=url=sftp://172.16.1.1"+file,
+        "=user=tftp",
+        "=password=tftp",
+        "=dst-path="+filename
+        )
+    
+    response = rosApi(ip,user,passwd,api_command)
+    print(response)
+
+#[{'status': 'connecting', '.section': '0'}, {'status': 'connecting', '.section': '1'}, {'status': 'finished', 'downloaded': '14', 'total': '14', 'duration': '1s', '.section': '2'}]
+
+    # API request to execute file .backup on device
+
+    api_command = ('/system/backup/load', '=name='+filename)
+    response = rosApi(ip,user,passwd,api_command)
+    print(response)
