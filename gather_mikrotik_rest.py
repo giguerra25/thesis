@@ -123,7 +123,7 @@ class GatherCapacity(Gather):
         free_memory = int(response['free-memory'])
         total_memory = int(response['total-memory'])
         used_memory = total_memory - free_memory
-        used_MB = used_memory/(10**6)
+        used_MB = truncate(used_memory/(10**6),2)
         used_percentage = truncate((used_memory/total_memory),2)*100
 
         return used_MB, used_percentage
@@ -147,7 +147,7 @@ class GatherCapacity(Gather):
         free_hdd = int(response['free-hdd-space'])
         total_hdd = int(response['total-hdd-space'])
         used_hdd = total_hdd - free_hdd
-        used_MB = used_hdd/(10**6)
+        used_MB = truncate(used_hdd/(10**6),2)
         used_percentage = truncate((used_hdd/total_hdd),2)*100
         
         return used_MB, used_percentage
