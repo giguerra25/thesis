@@ -44,15 +44,15 @@ print(a.date)'''
 
 #a = GatherCapacity(device_list[2],user,passwd)
 #values = a.capacity_dict()
-#a = GatherInventory(device_list[2],user,passwd)
-#values = a.inventory_dict()
+a = GatherInventory(device_list[2],user,passwd)
+values = a.inventory_dict()
 #print(values[1])
 
 
 from report_maker import Report
 
-ips = ['10.0.0.1','10.0.0.2']
+ips = ['10.0.0.2']
 
-a = Report(ips,'capacity')
+a = Report(ips,'inventory')
 #print(a.create_table())
 a.render_pdfreport()
