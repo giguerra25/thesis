@@ -7,7 +7,7 @@ import os
 import json
 
 
-device_list = ['172.16.1.2','172.16.1.254','10.0.0.2']
+device_list = ['172.16.1.2','172.16.1.254','10.0.0.2','10.0.0.1']
 user = 'giguerra'
 passwd = 'cisco'
 dir = os.getcwd()+'/backup_config/'
@@ -44,14 +44,15 @@ print(a.date)'''
 
 #a = GatherCapacity(device_list[2],user,passwd)
 #values = a.capacity_dict()
-a = GatherInventory(device_list[2],user,passwd)
-values = a.inventory_dict()
+#from gather_cisco_napalm import Gather, GatherInventory, GatherCapacity
+#a = GatherInventory(device_list[3],user,passwd)
+#values = a.inventory_dict()
 #print(values[1])
 
 
 from report_maker import Report
 
-ips = ['10.0.0.2']
+ips = ['10.0.0.1','10.0.0.2','10.0.0.6','172.16.1.2']
 
 a = Report(ips,'inventory')
 #print(a.create_table())

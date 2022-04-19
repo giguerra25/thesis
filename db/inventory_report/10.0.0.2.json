@@ -1,1 +1,1 @@
-{"_default": {"1": {"Device IP": "10.0.0.2", "Model": "CHR", "Serial Number": "Stao91qhuLM", "OS version": "7.1 (testing)", "Vendor": "MikroTik"}, "2": {"Device IP": "10.0.0.2", "Model": "CHR", "Serial Number": "Stao91qhuLM", "OS version": "7.1 (testing)", "Vendor": "MikroTik"}, "3": {"Device IP": "10.0.0.2", "Model": "CHR", "Serial Number": "Stao91qhuLM", "OS version": "7.1 (testing)", "Vendor": "MikroTik"}}}
+{"_default": {"1": {"Device IP": "10.0.0.2", "Hostname": "R2", "Model": "CHR", "Serial Number": "Stao91qhuLM", "OS version": "7.1 (testing)", "Vendor": "MikroTik"}}}

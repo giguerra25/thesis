@@ -89,10 +89,10 @@ class GatherInventory(Gather):
         
         values = {
             "Device IP": self.ip,
+            "Hostname": self.hostname(),
             "Model": self.model(),
             "Serial Number": self.serial_num(),
             "OS version": self.version_os(),
-            "Model": self.model(),
             "Vendor":self.vendor()
         }
 
@@ -119,7 +119,7 @@ class GatherCapacity(Gather):
         total_memory = int(response['total-memory'])
         used_memory = total_memory - free_memory
         used_MB = truncate(used_memory/(10**6),2)
-        used_percentage = truncate((used_memory/total_memory),2)*100
+        used_percentage = truncate((used_memory/total_memory)*100,1)
 
         return used_MB, used_percentage
 
@@ -143,7 +143,7 @@ class GatherCapacity(Gather):
         total_hdd = int(response['total-hdd-space'])
         used_hdd = total_hdd - free_hdd
         used_MB = truncate(used_hdd/(10**6),2)
-        used_percentage = truncate((used_hdd/total_hdd),2)*100
+        used_percentage = truncate((used_hdd/total_hdd)*100,1)
         
         return used_MB, used_percentage
 
@@ -164,11 +164,7 @@ class GatherCapacity(Gather):
         
         number_down = number_total - number_up
 
-        list_interfaces = [
-                            number_up,
-                            number_down
-                        ]
-        return list_interfaces
+        return number_up,number_down
 
 
     def capacity_dict(self):
@@ -194,3 +190,12 @@ class GatherCapacity(Gather):
         return values, id_db
 
 
+#device_list = ['10.0.0.6']
+#user = 'giguerra'
+#passwd = 'cisco'
+
+#a = GatherCapacity(device_list[0],user,passwd)
+#print(a.capacity_dict())
+
+#a = GatherInventory(device_list[0],user,passwd)
+#print(a.inventory_dict())

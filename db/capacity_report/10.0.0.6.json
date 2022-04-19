@@ -1,1 +1,1 @@
-{"_default": {"1": {"Device IP": "10.0.0.6", "Memory used (MB)": 21.89, "Memory used (%)": 21.0, "CPU load (%)": "7", "Disk used (MB)": 33.95, "Disk used (%)": 50.0, "Interfaces Up": 3, "Interfaces Dw": 0, "Timestamp": "2022-04-12_12:43:03"}}}
+{"_default": {"1": {"Device IP": "10.0.0.6", "Memory used (MB)": 20.33, "Memory used (%)": 20.1, "CPU load (%)": "5", "Disk used (MB)": 33.96, "Disk used (%)": 51.0, "Interfaces Up": 3, "Interfaces Dw": 0, "Timestamp": "2022-04-19_11:25:33"}}}

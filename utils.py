@@ -1,9 +1,12 @@
 import datetime, os, shutil
 from pathlib import Path
+from tracemalloc import Snapshot
 import xmltodict
 import routeros_api
 import ssl
 import math
+import xml.etree.cElementTree as ET
+
 
 
 def create_pathdir(dir): 
@@ -29,24 +32,6 @@ def createPathBackup():
 
     return path
 
-
-
-
-'''
-def createPathBackup(): 
-    """
-    Function returns the path of the directory to save backups. 
-    if it does not exist, it creates one.
-    """
-    pwd = os.getcwd()
-
-    try:
-        os.stat(pwd+'/backup_config')
-    except:
-        os.mkdir(pwd+'/backup_config')
-    
-    return pwd + '/backup_config/'
-'''
 
 
 def createNameBackup(ip):
@@ -171,4 +156,87 @@ def truncate(number, decimals=0):
     factor = 10.0 ** decimals
     return math.trunc(number * factor) / factor
 
+
+def xmltree_tag(xml_string,tag):
+
+    from constants import tags
+    #tree = ET.parse(xml)
+    #root = tree.getroot()
+    root = ET.fromstring(xml_string)
+
+    # loop for device with multiple cores
+    """if tag == 'cpu_used':
+
+        name_cores=[]
+        perc_use=[]
+        for descendant in root.iter(tags[tag]["cpu_used_corename"]):
+            name_cores.append(descendant.text)
+        for descendant in root.iter(tags[tag]["cpu_used_coreidle"]):
+            use = str(truncate(100-float(descendant.text),2))
+            perc_use.append(use)
+        
+        dict_cores={}
+        j=0
+        for i in name_cores:
+            dict_cores[i]=perc_use[j]
+            j=j+1
+
+        #print(name_cores)
+        #print(perc_use)
+        #print(dict_cores)
+        return dict_cores"""
+
+
+    for descendant in root.iter(tags[tag]):
+    
+        text = descendant.text
+
+    return text
+
+
+def xmltree_core(xml_string):
+
+    from constants import tags
+
+    root = ET.fromstring(xml_string)
+
+    name_cores=[]
+    perc_use=[]
+    for descendant in root.iter(tags['cpu_used']["cpu_used_corename"]):
+        name_cores.append(descendant.text)
+    for descendant in root.iter(tags['cpu_used']["cpu_used_coreidle"]):
+        use = str(truncate(100-float(descendant.text),2))
+        perc_use.append(use)
+
+    dict_cores={}
+    j=0
+    for i in name_cores:
+        dict_cores[i]=perc_use[j]
+        j=j+1
+
+    #print(name_cores)
+    #print(perc_use)
+    #print(dict_cores)
+    return dict_cores
+
+
+def xmltree_countupdown(xml_string):
+
+    from constants import tags
+
+    root = ET.fromstring(xml_string)
+
+    if_up = 0
+    if_total = 0
+    for descendant in root.iter(tags["interfaces_enable"]):
+        if_total = if_total + 1
+        if descendant.text == 'true': if_up = if_up + 1
+    
+    if_down = if_total - if_up
+
+    return if_up, if_down
+
+
+
+#print(xpath_hostname('response.xml'))
 
