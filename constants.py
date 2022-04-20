@@ -194,12 +194,12 @@ filter_usedmemory2 = """
 """
 
 
-filter = """
+filter_vlan = """
 <filter>
-<native 
-    xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
+<vlans 
+    xmlns="http://openconfig.net/yang/openconfig-vlan">
 
-</native>
+</vlans>
 </filter>
 """
 
