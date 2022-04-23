@@ -133,12 +133,12 @@ def rosApi(ip,username,password,api_commands):
                         context=context
             )
             
-        try: 
-            data_dict = router.talk(api_commands)
-            return data_dict
-        except:  #if feature was not implemented on routeros_api 
-            data_dict = 'NotImplemented'
-            return data_dict
+        #try: 
+        data_dict = router.talk(api_commands)
+        return data_dict
+        #except:  #if feature was not implemented on routeros_api 
+        #    data_dict = 'NotImplemented'
+        #    return data_dict
 
 
 
