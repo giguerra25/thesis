@@ -1,0 +1,14 @@
+{%- for vlan in vlan_list %}
+vlan {{ vlan.id }}
+  name {{ vlan.name }}
+{%- endfor %}
+!
+{%- for vlan in vlan_list %}
+{%- for port in vlan.interfaces %}
+interface {{ port }}
+  switchport
+  switchport mode access
+  switchport access vlan {{ vlan.id }}
+!
+{%- endfor %}
+{%- endfor %}

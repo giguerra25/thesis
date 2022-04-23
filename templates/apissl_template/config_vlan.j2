@@ -1,0 +1,28 @@
+
+/interface/bridge/add
+=name=bridge1
+=vlan-filtering=yes
+
+{%- for port in vlan.ports %}
+
+/interface/bridge/port/add
+=bridge=bridge1
+=interface={{ port }}
+=frame-types=admit-only-untagged-and-priority-tagged
+=ingress-filtering=yes
+=pvid={{ vlan.id }}
+
+{%- endfor %}
+
+{%- for port in vlan.ports %}
+
+/interface/bridge/vlan/add
+=bridge=bridge1
+=untagged={{ port }}
+=vlan-ids={{ vlan.id }}
+
+{%- endfor %}
+
+/interface/bridge/set
+bridge1
+=vlan-filtering=yes
