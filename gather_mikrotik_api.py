@@ -1,12 +1,20 @@
-from utils import rosApi, createNameBackup, createPathBackup
-from utils import truncate, create_pathdir
-import datetime
-from tinydb import TinyDB
+from utils import rosApi
+from utils import truncate, create_pathdir, timestamp, send2db
+#import datetime
+#from tinydb import TinyDB
 
 
 
 class Gather():
 
+    """
+    This is the base class we have to inherit from when writing data gathering
+    features for MikroTik devices based on API SSL
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         self.ip = ip
@@ -14,23 +22,43 @@ class Gather():
         self.passwd = passwd
 
 
-    def timestamp(self):
+    '''def timestamp(self):
+
+        """
+        It creates a timestamp
+        """
 
         date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 
-        return date
+        return date'''
 
     
     def request(self,api_command):
 
+        """
+        Function makes an API SSL request, sends an API word to gather data
+        from a device
+
+        :param api_command: (str) API word
+        """
+
         response = rosApi(self.ip,self.user,self.passwd,api_command)
         
-        date = self.timestamp()
+        date = timestamp()
 
         return response,date
     
 
-    def send2db(self,ip,record,dir):
+    '''def send2db(self,ip,record,dir):
+
+        """
+        Function sends data to the JSON file (database) related to a device and returns 
+        the record ID
+
+        :param ip: (str) IP address of the device
+        :param record: (str) data to be saved into the JSON file
+        :param dir: (str) Path where exists the directory that has the JSON file
+        """
 
         path = create_pathdir(dir)
 
@@ -38,10 +66,18 @@ class Gather():
 
         id = db.insert(record)
 
-        return id
+        return id'''
 
 
 class GatherInventory(Gather):
+
+    """
+    This class creates an instance that collects general data about a MikroTik device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
@@ -51,6 +87,10 @@ class GatherInventory(Gather):
 
 
     def hostname(self):
+
+        """
+        Function collects the hostname of a device
+        """
 
         resource = '/system/identity/print'
 
@@ -62,6 +102,10 @@ class GatherInventory(Gather):
 
     def serial_num(self):
 
+        """
+        Function collects the serial number of a device
+        """
+
         resource = '/system/license/print'
         response = self.request(resource)[0][0]
         sn = response['system-id']
@@ -70,22 +114,39 @@ class GatherInventory(Gather):
 
     def version_os(self):
 
+        """
+        Function collects the Operative System version of a device
+        """
+
         os = self.response[0]['version']
         return os
 
     
     def model(self):
 
+        """
+        Function collects the model of a device
+        """
+
         model = self.response[0]['board-name']
         return model
 
     def vendor(self):
+
+        """
+        Function collects the vendor of a device
+        """
 
         vendor = self.response[0]['platform']
         return vendor
     
 
     def inventory_dict(self):
+
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
         
         values = {
             "Device IP": self.ip,
@@ -95,14 +156,23 @@ class GatherInventory(Gather):
             "OS version": self.version_os(),
             "Vendor":self.vendor()
         }
-
-        id_db = self.send2db(self.ip,values,self.dir)
+        #id_db = self.send2db(self.ip,values,self.dir)
+        id_db = send2db(self.ip, values, self.dir)
 
         return values, id_db
 
 
 
 class GatherCapacity(Gather):
+
+    """
+    This class creates an instance that collects general data about physical and
+    environmental characteristics of a MikroTik device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
@@ -111,6 +181,10 @@ class GatherCapacity(Gather):
 
     
     def memory_used(self):
+
+        """
+        Function collects used RAM memory in MB and percentage
+        """
 
         response = self.response[0]
         
@@ -126,6 +200,10 @@ class GatherCapacity(Gather):
 
     def cpu_used(self):
 
+        """
+        Function collects CPU usage percentage
+        """
+
         response = self.response[0]
 
         #Value in percentage
@@ -135,6 +213,10 @@ class GatherCapacity(Gather):
 
 
     def hdd_used(self):
+
+        """
+        Function collects used hard disk in MB and percentage
+        """
 
         response = self.response[0]
 
@@ -149,6 +231,10 @@ class GatherCapacity(Gather):
 
 
     def interfaces_upordown(self):
+
+        """
+        Function collects the number of up and down interfaces
+        """
 
         resource = '/interface/ethernet/print'
 
@@ -169,6 +255,11 @@ class GatherCapacity(Gather):
 
     def capacity_dict(self):
 
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
+
         memory_used = self.memory_used()
         cpu_load = self.cpu_used()
         disk_used = self.hdd_used()
@@ -185,7 +276,8 @@ class GatherCapacity(Gather):
             "Interfaces Dw": interfaces[1],
             "Timestamp": self.date
         }
-        id_db = self.send2db(self.ip, values, self.dir)
+        #id_db = self.send2db(self.ip, values, self.dir)
+        id_db = send2db(self.ip, values, self.dir)
 
         return values, id_db
 

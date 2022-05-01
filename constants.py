@@ -1,3 +1,5 @@
+"""Constants to be used across NETCONF related scripts."""
+
 
 tags = {
 
@@ -157,7 +159,6 @@ filter_serialnumber2 = """
 
 
 
-
 filter_osversion2 = """
 <filter>
 <device-hardware-data 
@@ -210,3 +211,4 @@ filter2 = """
 </memory-statistics>
 </filter>
 """
+

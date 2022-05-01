@@ -1,13 +1,21 @@
 import requests
 from requests.auth import HTTPBasicAuth
-from utils import truncate, create_pathdir
-import datetime
-from tinydb import TinyDB
-import json
+from utils import truncate, create_pathdir, timestamp, send2db
+#import datetime
+#from tinydb import TinyDB
 
 
 
 class Gather():
+
+    """
+    This is the base class we have to inherit from when writing data gathering
+    features for MikroTik devices based on REST API
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
 
     def __init__(self, ip, user, passwd):
@@ -16,13 +24,25 @@ class Gather():
         self.passwd = passwd
         self.url = 'https://'+ip+'/rest'
 
-    def timestamp(self):
+
+    '''def timestamp(self):
+
+        """
+        It creates a timestamp
+        """
 
         date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 
-        return date
+        return date'''
     
+
     def request(self,resource):
+
+        """
+        Function makes a GET REST API request to gather data from a device
+
+        :param resource: (str) resource about a configuration part
+        """
 
         response = requests.get(self.url+resource,
                                 auth=HTTPBasicAuth(self.user,self.passwd), 
@@ -31,12 +51,21 @@ class Gather():
     
         response = response.json()
 
-        date = self.timestamp()
+        date = timestamp()
 
         return response,date
 
 
-    def send2db(self,ip,record,dir):
+    '''def send2db(self,ip,record,dir):
+
+        """
+        Function sends data to the JSON file (database) related to a device and returns 
+        the record ID
+
+        :param ip: (str) IP address of the device
+        :param record: (str) data to be saved into the JSON file
+        :param dir: (str) Path where exists the directory that has the JSON file
+        """
 
         path = create_pathdir(dir)
 
@@ -44,12 +73,20 @@ class Gather():
 
         id = db.insert(record)
 
-        return id
+        return id'''
 
 
 
 
 class GatherInventory(Gather):
+
+    """
+    This class creates an instance that collects general data about a MikroTik device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
@@ -60,12 +97,20 @@ class GatherInventory(Gather):
     
     def hostname(self):
 
+        """
+        Function collects the hostname of a device
+        """
+
         resource = '/system/identity'
         response = self.request(resource)[0]
         hostname = response['name']
         return hostname
     
     def serial_num(self):
+
+        """
+        Function collects the serial number of a device
+        """
 
         resource = '/system/license'
         response = self.request(resource)[0]
@@ -74,20 +119,37 @@ class GatherInventory(Gather):
     
     def version_os(self):
 
+        """
+        Function collects the Operative System version of a device
+        """
+
         os = self.response['version']
         return os
     
     def model(self):
+
+        """
+        Function collects the model of a device
+        """
 
         model = self.response['board-name']
         return model
 
     def vendor(self):
 
+        """
+        Function collects the vendor of a device
+        """
+
         vendor = self.response['platform']
         return vendor
     
     def inventory_dict(self):
+
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
         
         values = {
             "Device IP": self.ip,
@@ -98,7 +160,8 @@ class GatherInventory(Gather):
             "Vendor":self.vendor()
         }
 
-        id_db = self.send2db(self.ip,values,self.dir)
+        #id_db = self.send2db(self.ip,values,self.dir)
+        id_db = send2db(self.ip,values,self.dir)
 
         return values, id_db
     
@@ -107,6 +170,15 @@ class GatherInventory(Gather):
 
 class GatherCapacity(Gather):
 
+    """
+    This class creates an instance that collects general data about physical and
+    environmental characteristics of a MikroTik device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
+
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
         self.response, self.date = self.request('/system/resource')
@@ -114,6 +186,10 @@ class GatherCapacity(Gather):
     
 
     def memory_used(self):
+
+        """
+        Function collects used RAM memory in MB and percentage
+        """
 
         response = self.response
         
@@ -129,6 +205,10 @@ class GatherCapacity(Gather):
 
     def cpu_used(self):
 
+        """
+        Function collects CPU usage percentage
+        """
+
         response = self.response
 
         #Value in percentage
@@ -138,6 +218,10 @@ class GatherCapacity(Gather):
     
 
     def hdd_used(self):
+
+        """
+        Function collects used hard disk in MB and percentage
+        """
 
         response = self.response
 
@@ -153,6 +237,10 @@ class GatherCapacity(Gather):
 
 
     def interfaces_upordown(self):
+
+        """
+        Function collects the number of up and down interfaces
+        """
 
         resource = '/interface/ethernet'
 
@@ -173,6 +261,11 @@ class GatherCapacity(Gather):
 
     def capacity_dict(self):
 
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
+
         memory_used = self.memory_used()
         cpu_load = self.cpu_used()
         disk_used = self.hdd_used()
@@ -189,7 +282,8 @@ class GatherCapacity(Gather):
             "Interfaces Dw": interfaces[1],
             "Timestamp": self.date
         }
-        id_db = self.send2db(self.ip, values, self.dir)
+        #id_db = self.send2db(self.ip, values, self.dir)
+        id_db = send2db(self.ip,values,self.dir)
 
         return values, id_db
 

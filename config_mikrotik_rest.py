@@ -1,9 +1,17 @@
 import requests
 from requests.auth import HTTPBasicAuth
-import datetime
 import json
 
 class Config():
+
+    """
+    This is the base class we have to inherit from when writing configuration
+    features for MikroTik devices based on REST API
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         self.ip = ip
@@ -11,13 +19,17 @@ class Config():
         self.passwd = passwd
         self.url = 'https://'+ip+'/rest'
     
-    def timestamp(self):
 
-        date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-
-        return date
 
     def request_put(self,resource,data):
+
+        """
+        Function makes a REST API PUT request to create a resource in the running 
+        configuration.
+
+        :param resource: (str) HTTP resource 
+        :param data: (list) Parameters of the API request body
+        """
 
         response = requests.put(self.url+resource,
                                 auth=HTTPBasicAuth(self.user,self.passwd),
@@ -26,12 +38,19 @@ class Config():
                                 timeout=2)
     
         response = response.json()
-
         #date = self.timestamp()
-
         return response
-    
+
+
     def request_patch(self,resource,data):
+
+        """
+        Function makes a REST API PATCH request to modify a resource in the running 
+        configuration.
+
+        :param resource: (str) HTTP resource 
+        :param data: (list) Parameters of the API request body
+        """
 
         response = requests.patch(self.url+resource,
                                 auth=HTTPBasicAuth(self.user,self.passwd),
@@ -40,12 +59,18 @@ class Config():
                                 timeout=2)
     
         response = response.json()
-
         #date = self.timestamp()
-
         return response
+ 
     
     def request_get(self,resource):
+
+        """
+        Function makes a REST API GET request to collect data about a resource 
+        in the running configuration.
+
+        :param resource: (str) HTTP resource 
+        """
 
         response = requests.get(self.url+resource,
                                 auth=HTTPBasicAuth(self.user,self.passwd),
@@ -53,20 +78,73 @@ class Config():
                                 timeout=2)
     
         response = response.json()
-
         #date = self.timestamp()
-
         return response
+
 
 
 class ConfigInterface(Config):
 
-    def __init__(self, ip, user, passwd, param_interfaces=[]):
+    """
+    This class creates an instance that configures interfaces of a MikroTik device
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param param_interfaces: (list) List of interfaces with their parameters
+
+    Example of param_interfaces:
+        interfaces = [{
+                        "interface":"ether3",
+                        "ip_address": "2.2.2.1",
+                        "subnetmask": "255.255.255.0",
+                        "description": "Configured via APISSL",
+                        "enabled": True
+                        }]
+    """
+
+    def __init__(self, ip, user, passwd, param_interfaces:list):
         super().__init__(ip, user, passwd)
 
-        self.interfaces = param_interfaces
+        self.interfaces = self.changekeys_interface(param_interfaces)
+
+        self.config_if()
+
+    
+    def changekeys_interface(self,interfaces):
+
+        """
+        Function changes keys from data read in YAML file
+        to suitable keys for REST API body data format.
+
+        :param interfaces: (list) List of interfaces with their parameters
+        """
+
+        from ipaddress import IPv4Network
+
+        v = {}
+        t = []
+        for interface in interfaces:
+
+            v["interface"] = interface["interface"]
+            v["comment"] = interface["description"]
+
+            ip = IPv4Network((str(interface["ip_address"]),str(interface["subnetmask"])))
+
+            v["address"] = ip.with_prefixlen
+            v['disabled'] = 'no' if interface['enabled'] == True else 'yes'
+            
+            t.append(v)
+            v = {}
+        
+        return t
+
 
     def config_if(self):
+
+        """
+        Function sends a REST API REQUEST with interface configuration data.
+        """
         
         resource = '/ip/address' 
 
@@ -79,13 +157,57 @@ class ConfigInterface(Config):
 
 class ConfigStaticRoute(Config):
 
-    def __init__(self, ip, user, passwd, list_routes=[]):
+    """
+    This class creates an instance that configures static routes on a MikroTik device
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param list_routes: (list) List of interfaces with their parameters
+
+    Example of list_routes:
+        routes =[{
+                    "destination_network": "172.168.30.0/24",
+                    "nexthop": "5.5.5.5",
+                    "distance": 1
+                }]
+    """
+
+    def __init__(self, ip, user, passwd, list_routes:list):
         super().__init__(ip, user, passwd)
 
-        self.list_routes = list_routes
+        self.list_routes = self.changekeys_route(list_routes)
 
-    
+        self.config_routes()
+
+
+    def changekeys_route(self,routes):
+
+        """
+        Function changes keys from data read in YAML file
+        to suitable keys for REST API body data format.
+
+        :param routes: (list) List of routes with their parameters
+        """
+
+        v = {}
+        t = []
+        for route in routes:
+
+            v["dst-address"] = route["destination_network"]
+            v["gateway"] = str(route["nexthop"])
+            v["distance"] = str(route["distance"])
+            t.append(v)
+            v = {}
+        
+        return t
+
+            
     def config_routes(self):
+
+        """
+        Function sends a REST API REQUEST with static route configuration data.
+        """
 
         resource = '/ip/route'
 
@@ -94,15 +216,41 @@ class ConfigStaticRoute(Config):
             print(response)
 
 
+
 class ConfigVlan(Config):
 
-    def __init__(self, ip, user, passwd, list_vlans=[]):
+    """
+    This class creates an instance that configures VLANs on a MikroTik device
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param list_vlans: (list) List of VLANs with their parameters
+
+    Example of param_interfaces:
+        vlans =[{
+                    "name": "vlan-80",
+                    "id": 80,
+                    "ports": [
+                        "ether4",
+                        "ether5"
+                        ]
+                }]
+    """
+
+    def __init__(self, ip, user, passwd, list_vlans:list):
         super().__init__(ip, user, passwd)
 
         self.list_vlan = list_vlans
+
+        self.config_vlans()
     
 
     def config_vlans(self):
+
+        """
+        Function sends a REST API REQUEST with VLAN configuration data.
+        """
 
         resource_bridge = '/interface/bridge'
         resource_port = '/interface/bridge/port'
@@ -122,6 +270,7 @@ class ConfigVlan(Config):
         if response == []: 
             self.request_put(resource_bridge,{'name':'bridge1',
                                           'vlan-filtering':'true'})
+       
        #request to create ports with PVID
         for vlan in self.list_vlan:
 
@@ -130,7 +279,7 @@ class ConfigVlan(Config):
                 content = { 
                     'bridge':'bridge1',
                     'interface':port,
-                    'pvid':vlan['id']
+                    'pvid':str(vlan['id'])
                  }
                 
                 self.request_put(resource_port,content)
@@ -139,7 +288,7 @@ class ConfigVlan(Config):
             content = {
                 'bridge':'bridge1',
                 'untagged':','.join(vlan['ports']),
-                'vlan-ids':vlan['id']
+                'vlan-ids':str(vlan['id'])
             }
 
             self.request_put(resource_vlan,content)
@@ -153,13 +302,17 @@ passwd = 'cisco'
 interfaces = [
     {
     "interface":"ether4",
-    "comment": "Configured via APIREST",
-    "address": "2.2.2.1/32",
+    "ip_address": "2.2.2.1",
+    "subnetmask": "255.255.255.0",
+    "description": "Configured via RESTAPI",
+    "enabled": True
     },
     {
     "interface":"ether5",
-    "comment": "Configured via APIREST",
-    "address": "3.3.3.1/32",
+    "ip_address": "3.3.3.1",
+    "subnetmask": "255.255.255.0",
+    "description": "Configured via RESTAPI",
+    "enabled": True
     }
 ]
 
@@ -168,14 +321,14 @@ interfaces = [
 
 routes = [
     {
-        "dst-address": "172.168.30.0/24",
-        "gateway": "5.5.5.5",
-        "distance": "1"
+        "destination_network": "172.168.30.0/24",
+        "nexthop": "5.5.5.5",
+        "distance": 1
     },
     {
-        "dst-address": "192.168.50.0/24",
-        "gateway": "10.0.3.1",
-        "distance": "5"
+        "destination_network": "192.168.50.0/24",
+        "nexthop": "10.0.3.1",
+        "distance": 5
     }
 ]
 
@@ -185,7 +338,7 @@ routes = [
 vlans =[
     {
         "name": "vlan-80",
-        "id": "80",
+        "id": 80,
         "ports": [
             "ether4",
             "ether5"
@@ -193,12 +346,12 @@ vlans =[
     },
     {
         "name": "vlan-90",
-        "id": "90",
+        "id": 90,
         "ports": [
             "ether6",
             "ether7"
         ],
     }
 ]
-a = ConfigVlan(device_list[0],user,passwd,vlans)
-a.config_vlans()
+#a = ConfigVlan(device_list[0],user,passwd,vlans)
+#a.config_vlans()

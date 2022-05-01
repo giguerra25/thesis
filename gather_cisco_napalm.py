@@ -1,12 +1,20 @@
 from napalm import get_network_driver
 from napalm.base.exceptions import ConnectionException
-import datetime, os
-from utils import createPathBackup, createNameBackup
-from utils import truncate, create_pathdir
-from tinydb import TinyDB
+#import datetime
+from utils import truncate, create_pathdir, timestamp, send2db
+#from tinydb import TinyDB
 
 
 class Gather():
+
+    """
+    This is the base class we have to inherit from when writing data gathering
+    features for Cisco devices based on NAPALM
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
 
     def __init__(self, ip, user, passwd):
@@ -15,14 +23,25 @@ class Gather():
         self.passwd = passwd
 
 
-    def timestamp(self):
+    '''def timestamp(self):
+
+        """
+        It creates a timestamp
+        """
 
         date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 
-        return date
+        return date'''
 
     
     def request(self,napalm_getter):
+
+        """
+        Function makes a NAPALM call, sends configuration data to merge it with the
+        running configuration on a device
+
+        :param napalm_getter: (str) String equal to the NAPALM getter method
+        """
 
         driver = get_network_driver("ios")
 
@@ -50,24 +69,40 @@ class Gather():
 
         device.close()
         
-        date = self.timestamp()
+        date = timestamp()
 
         return response,date
     
 
-    def send2db(self,ip,record,dir):
+    '''def send2db(self,ip,record,dir):
 
+        """
+        Function sends data to the JSON file (database) related to a device and returns 
+        the record ID
+
+        :param ip: (str) IP address of the device
+        :param record: (str) data to be saved into the JSON file
+        :param dir: (str) Path where exists the directory that has the JSON file
+        """
+
+        #It makes sure that the direcotry exits
         path = create_pathdir(dir)
-
         db = TinyDB('{}{}.json'.format(path,ip))
-
         id = db.insert(record)
 
-        return id
+        return id'''
 
 
 
 class GatherInventory(Gather):
+
+    """
+    This class creates an instance that collects general data about a Cisco device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
@@ -76,12 +111,20 @@ class GatherInventory(Gather):
 
     
     def hostname(self):
-  
+
+        """
+        Function collects the hostname of a device
+        """
+        
         hostname = self.response['hostname']
         return hostname
     
 
     def serial_num(self):
+
+        """
+        Function collects the serial number of a device
+        """
 
         sn = self.response['serial_number']
         return sn
@@ -89,11 +132,19 @@ class GatherInventory(Gather):
     
     def version_os(self):
 
+        """
+        Function collects the Operative System version of a device
+        """
+
         os = self.response['os_version']
         return os
     
 
     def model(self):
+
+        """
+        Function collects the model of a device
+        """
 
         model = self.response['model']
         return model
@@ -101,11 +152,20 @@ class GatherInventory(Gather):
 
     def vendor(self):
 
+        """
+        Function collects the vendor of a device
+        """
+
         vendor = self.response['vendor']
         return vendor
     
 
     def inventory_dict(self):
+
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
         
         values = {
             "Device IP": self.ip,
@@ -116,13 +176,23 @@ class GatherInventory(Gather):
             "Vendor":self.vendor()
         }
 
-        id_db = self.send2db(self.ip,values,self.dir)
+        #id_db = self.send2db(self.ip,values,self.dir)
+        id_db = send2db(self.ip, values, self.dir)
 
         return values, id_db
 
 
 
 class GatherCapacity(Gather):
+
+    """
+    This class creates an instance that collects general data about physical and
+    environmental characteristics of a Cisco device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
@@ -132,6 +202,10 @@ class GatherCapacity(Gather):
     
 
     def memory_used(self):
+
+        """
+        Function collects used RAM memory in MB and percentage
+        """
 
         response = self.response['memory']
         
@@ -147,6 +221,10 @@ class GatherCapacity(Gather):
 
     def cpu_used(self):
 
+        """
+        Function collects CPU usage percentage
+        """
+
         response = self.response['cpu'][0]
 
         #Value in percentage
@@ -158,6 +236,10 @@ class GatherCapacity(Gather):
 
     def hdd_used(self):
 
+        """
+        Function collects used hard disk in MB and percentage
+        """
+
         # NAPALM getter does not collect this data!!!
         used_MB = 'NAPALMnotImplemented'
         used_percentage = 'NAPALMnotImplemented'
@@ -168,6 +250,10 @@ class GatherCapacity(Gather):
     
 
     def interfaces_upordown(self):
+
+        """
+        Function collects the number of up and down interfaces
+        """
 
         napalm_getter = 'device.get_interfaces()'
 
@@ -190,6 +276,11 @@ class GatherCapacity(Gather):
 
     def capacity_dict(self):
 
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
+
         memory_used = self.memory_used()
         cpu_load = self.cpu_used()
         disk_used = self.hdd_used()
@@ -206,7 +297,8 @@ class GatherCapacity(Gather):
             "Interfaces Dw": interfaces[1],
             "Timestamp": self.date
         }
-        id_db = self.send2db(self.ip, values, self.dir)
+        #id_db = self.send2db(self.ip, values, self.dir)
+        id_db = send2db(self.ip, values, self.dir)
 
         return values, id_db
 

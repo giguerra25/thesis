@@ -1,16 +1,18 @@
 <config>
   <interfaces xmlns="urn:ietf:params:xml:ns:yang:ietf-interfaces">
+	{% for interface in interfaces %}
 	<interface>
-	  <name>{int_name}</name>
-	  <description>{int_desc}</description>
+	  <name>{{ interface['interface'] }}</name>
+	  <description>{{ interface['description'] }}</description>
 	  <type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ethernetCsmacd</type>
-	  <enabled>true</enabled>
+	  <enabled>{{ interface['enabled'] }}</enabled>
 	  <ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
 		<address>
-		  <ip>{ip_address}</ip>
-		  <netmask>{subnet_mask}</netmask>
+		  <ip>{{ interface['ip_address'] }}</ip>
+		  <netmask>{{ interface['subnetmask'] }}</netmask>
 		</address>
 	  </ipv4>
 	</interface>
+	{% endfor %}
   </interfaces>
 </config>

@@ -4,7 +4,7 @@ vlan {{ vlan.id }}
 {%- endfor %}
 !
 {%- for vlan in vlan_list %}
-{%- for port in vlan.interfaces %}
+{%- for port in vlan.ports %}
 interface {{ port }}
   switchport
   switchport mode access

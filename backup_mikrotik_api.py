@@ -5,17 +5,24 @@ import os
 
 def backupSSLApi(ip,user,passwd):
 
-    filename =  createNameBackup(ip)
+    """
+    Function makes API SSL calls, creates a backup file in the device, 
+    collects the backup file in the server, and erases the file in the device.
 
-    # Creation of a file .backup on the device
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
+
+    # Creation of a file .backup on the device with API SSL call
+    filename =  createNameBackup(ip,'apissl')
     api_command = ('/system/backup/save', '=name='+filename)
-
     response = rosApi(ip,user,passwd,api_command)
     
 
     #Collection of the content of the file .backup created.
-    path = createPathBackup()
-
+    path = createPathBackup(ip)
+    
     api_command = (
         "/tool/fetch",
         "=upload=yes", 
@@ -57,12 +64,21 @@ def backupSSLApi(ip,user,passwd):
 
 
 def restoreSSLApi(file,ip,user,passwd):
+
+    """
+    Function makes an API SSL call, sends a .backup file to a device, and loads
+    the .backup file into the device.
+
+    :param file: (str) Path to the file with the configuration
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
     
-    path = os.path.dirname(file)
+    path = os.path.dirname(file) # CHECK IF THIS IS NEEDED
     filename = os.path.basename(file)
 
     # API request to get file .backup to device via SFTP
-
     api_command = (
         "/tool/fetch",
         "=url=sftp://172.16.1.1"+file,
@@ -73,11 +89,9 @@ def restoreSSLApi(file,ip,user,passwd):
     
     response = rosApi(ip,user,passwd,api_command)
     print(response)
-
-#[{'status': 'connecting', '.section': '0'}, {'status': 'connecting', '.section': '1'}, {'status': 'finished', 'downloaded': '14', 'total': '14', 'duration': '1s', '.section': '2'}]
+    #[{'status': 'connecting', '.section': '0'}, {'status': 'connecting', '.section': '1'}, {'status': 'finished', 'downloaded': '14', 'total': '14', 'duration': '1s', '.section': '2'}]
 
     # API request to execute file .backup on device
-
     api_command = ('/system/backup/load', '=name='+filename)
     response = rosApi(ip,user,passwd,api_command)
     print(response)

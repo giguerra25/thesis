@@ -1,8 +1,8 @@
 !
 {%- for interface in interfaces %}
-interface {{ interface.name }}
+interface {{ interface.interface }}
   description {{ interface.description | default("NO DESCRIPTION") }}
-  ip address {{ interface.address }}
+  ip address {{ interface.ip_address }} {{ interface.subnetmask }}
   {%- if interface.enabled == true %}
   no shutdown
   {%- endif %}

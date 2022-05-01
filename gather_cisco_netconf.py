@@ -1,9 +1,8 @@
 from ncclient import manager
-from utils import createPathBackup, createNameBackup, stripTagXml
 from utils import xmltree_tag, xmltree_countupdown, xmltree_core
-from utils import truncate, create_pathdir
-import datetime
-from tinydb import TinyDB
+from utils import truncate, create_pathdir, timestamp, send2db
+#import datetime
+#from tinydb import TinyDB
 import constants as C
 
 
@@ -11,6 +10,14 @@ import constants as C
 
 class Gather():
 
+    """
+    This is the base class we have to inherit from when writing data gathering
+    features for Cisco devices based on NETCONF
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
 
     def __init__(self, ip, user, passwd):
         self.ip = ip
@@ -18,14 +25,27 @@ class Gather():
         self.passwd = passwd
     
 
-    def timestamp(self):
+    '''def timestamp(self):
+
+        """
+        It creates a timestamp
+        """
 
         date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
 
-        return date
+        return date'''
     
 
-    def send2db(self,ip,record,dir):
+    '''def send2db(self,ip,record,dir):
+
+        """
+        Function sends data to the JSON file (database) related to a device and returns 
+        the record ID
+
+        :param ip: (str) IP address of the device
+        :param record: (str) data to be saved into the JSON file
+        :param dir: (str) Path where exists the directory that has the JSON file
+        """
 
         path = create_pathdir(dir)
 
@@ -33,11 +53,18 @@ class Gather():
 
         id = db.insert(record)
 
-        return id
+        return id'''
     
 
 
     def request(self,filter):
+
+        """
+        Function makes a NETCONF RPC request, sends a XML filter to gather data
+        from a device
+
+        :param filter: (str) XML filter
+        """
 
         with manager.connect(host=self.ip, 
                              port='830', 
@@ -52,7 +79,7 @@ class Gather():
 
         #response = xmltodict.parse(netconf_response.xml)["rpc-reply"]["data"]
         
-        date = self.timestamp()
+        date = timestamp()
 
         return response,date
 
@@ -61,12 +88,24 @@ class Gather():
 
 class GatherInventory(Gather):
 
+    """
+    This class creates an instance that collects general data about a Cisco device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
+
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
         self.dir = '/db/inventory_report'
 
 
     def hostname(self):
+
+        """
+        Function collects the hostname of a device
+        """
         
         #rpc = 'get(C.filter_hostname)'
         #response = self.request(rpc)
@@ -81,6 +120,10 @@ class GatherInventory(Gather):
 
     def serial_num(self):
 
+        """
+        Function collects the serial number of a device
+        """
+
         filter = C.filter_serialnumber
         response = self.request(filter)[0]
         sn = xmltree_tag(response,'sn')
@@ -89,6 +132,10 @@ class GatherInventory(Gather):
 
 
     def version_os(self):
+
+        """
+        Function collects the Operative System version of a device
+        """
 
         filter = C.filter_osversion
         response = self.request(filter)[0]
@@ -99,6 +146,10 @@ class GatherInventory(Gather):
 
     def model(self):
 
+        """
+        Function collects the model of a device
+        """
+
         filter = C.filter_model
         response = self.request(filter)[0]
         model = xmltree_tag(response,'model')
@@ -107,12 +158,21 @@ class GatherInventory(Gather):
 
     def vendor(self):
 
+        """
+        Function collects the vendor of a device
+        """
+
         vendor = 'Cisco'
 
         return vendor
     
 
     def inventory_dict(self):
+
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
         
         values = {
             "Device IP": self.ip,
@@ -123,7 +183,8 @@ class GatherInventory(Gather):
             "Vendor":self.vendor()
         }
 
-        id_db = self.send2db(self.ip,values,self.dir)
+        #id_db = self.send2db(self.ip,values,self.dir)
+        id_db = send2db(self.ip, values, self.dir)
 
         return values, id_db
 
@@ -131,11 +192,25 @@ class GatherInventory(Gather):
 
 class GatherCapacity(Gather):
 
+    """
+    This class creates an instance that collects general data about physical and
+    environmental characteristics of a Cisco device
+    
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
+
     def __init__(self, ip, user, passwd):
         Gather.__init__(self, ip, user, passwd)
         self.dir = '/db/capacity_report'
 
+
     def memory_used(self):
+
+        """
+        Function collects used RAM memory in MB and percentage
+        """
 
         filter = C.filter_memoryused
         response = self.request(filter)[0]
@@ -147,7 +222,12 @@ class GatherCapacity(Gather):
 
         return used_MB, used_percentage
     
+
     def cpu_used(self):
+
+        """
+        Function collects CPU usage percentage
+        """
 
         filter = C.filter_cpuused
         response = self.request(filter)[0]
@@ -158,6 +238,10 @@ class GatherCapacity(Gather):
     
 
     def hdd_used(self):
+
+        """
+        Function collects used hard disk in MB and percentage
+        """
         
         # Value on bits
         filter = C.filter_hddused
@@ -172,6 +256,10 @@ class GatherCapacity(Gather):
 
 
     def interfaces_upordown(self):
+
+        """
+        Function collects the number of up and down interfaces
+        """
         
         filter = C.filter_interfacesupdown
         response = self.request(filter)[0]
@@ -182,6 +270,11 @@ class GatherCapacity(Gather):
 
 
     def capacity_dict(self):
+
+        """
+        Function collects different data into a dictionary, then it sends it to the
+        JSON file.
+        """
 
         memory_used = self.memory_used()
         cpu_load = self.cpu_used()
@@ -197,10 +290,11 @@ class GatherCapacity(Gather):
             "Disk used (%)": disk_used[1],
             "Interfaces Up": interfaces[0],
             "Interfaces Dw": interfaces[1],
-            "Timestamp": self.timestamp()
+            "Timestamp": timestamp()
         }
 
-        id_db = self.send2db(self.ip, values, self.dir)
+        #id_db = self.send2db(self.ip, values, self.dir)
+        id_db = send2db(self.ip, values, self.dir)
 
         return values, id_db
 

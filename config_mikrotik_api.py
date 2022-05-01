@@ -1,25 +1,35 @@
-import datetime
 from utils import rosApi
 from jinja2 import Template
 
 
 class Config():
 
+    """
+    This is the base class we have to inherit from when writing configuration
+    features for MikroTik devices based on API SSL
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    """
+
     def __init__(self, ip, user, passwd):
         self.ip = ip
         self.user = user
         self.passwd = passwd
     
-    def timestamp(self):
-
-        date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-
-        return date
     
 
-    def request(self,api_command):
+    def request(self,api_commands):
 
-        response = rosApi(self.ip,self.user,self.passwd,api_command)
+        """
+        Function makes an API SSL call, sends commands to a device to make changes
+        on running configuration.
+
+        :param api_commands: (str, tuple, list) API words that go in the API request
+        """
+
+        response = rosApi(self.ip,self.user,self.passwd,api_commands)
         
         #date = self.timestamp()
 
@@ -29,13 +39,67 @@ class Config():
 
 class ConfigInterface(Config):
 
-    def __init__(self, ip, user, passwd, param_interfaces=[]):
+    """
+    This class creates an instance that configures interfaces of a MikroTik device
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param param_interfaces: (list) List of interfaces with their parameters
+
+    Example of param_interfaces:
+        interfaces = [{
+                        "interface":"ether3",
+                        "ip_address": "2.2.2.1",
+                        "subnetmask": "255.255.255.0",
+                        "description": "Configured via APISSL",
+                        "enabled": True
+                        }]
+    """
+
+    def __init__(self, ip, user, passwd, param_interfaces:list):
         super().__init__(ip, user, passwd)
 
-        self.interfaces = param_interfaces
+        self.interfaces = self.changekeys_interface(param_interfaces)
+
+        self.config_if()
     
 
+    def changekeys_interface(self,interfaces):
+
+        """
+        Function changes keys from data read in YAML file
+        to suitable keys for the API word command and its attributes.
+
+        :param interfaces: (list) List of interfaces with their parameters 
+        """
+
+        from ipaddress import IPv4Network
+
+        v = {}
+        t = []
+        for interface in interfaces:
+
+            v["interface"] = interface["interface"]
+            v["comment"] = interface["description"]
+
+            ip = IPv4Network((str(interface["ip_address"]),str(interface["subnetmask"])))
+
+            v["address"] = ip.with_prefixlen
+            v['disabled'] = 'no' if interface['enabled'] == True else 'yes'
+            
+            t.append(v)
+            v = {}
+        
+        return t
+
+
     def config_if(self):
+
+        """
+        Function reads a JINJA template, fills it with interface data, and sends a
+        API SSL call with this data.
+        """
 
         apissl_template = Template(open("templates/apissl_template/config_int.j2").read())
 
@@ -49,14 +113,61 @@ class ConfigInterface(Config):
         self.request(apissl_payload)
 
 
+
 class ConfigStaticRoute(Config):
+
+    """
+    This class creates an instance that configures static routes on a MikroTik device
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param list_routes: (list) List of interfaces with their parameters
+
+    Example of list_routes:
+        routes =[{
+                    "destination_network": "172.168.30.0/24",
+                    "nexthop": "5.5.5.5",
+                    "distance": 1
+                }]
+    """
 
     def __init__(self, ip, user, passwd, list_routes=[]):
         super().__init__(ip, user, passwd)
 
-        self.list_routes = list_routes
+        self.list_routes = self.changekeys_route(list_routes)
+
+        self.config_routes()
+    
+
+    def changekeys_route(self,routes):
+
+        """
+        Function changes keys from data read in YAML file
+        to suitable keys for REST API body data format
+
+        :param routes: (list) List of routes with their parameters
+        """
+
+        v = {}
+        t = []
+        for route in routes:
+
+            v["dst-address"] = route["destination_network"]
+            v["gateway"] = str(route["nexthop"])
+            v["distance"] = str(route["distance"])
+            t.append(v)
+            v = {}
+        
+        return t
+
 
     def config_routes(self):
+
+        """
+        Function reads a JINJA template, fills it with routes data, and sends an
+        API SSL call with this data.
+        """
 
         apissl_template = Template(open("templates/apissl_template/config_static_route.j2").read())
 
@@ -69,18 +180,43 @@ class ConfigStaticRoute(Config):
 
         self.request(apissl_payload)
 
-        
 
     
 class ConfigVlan(Config):
+
+    """
+    This class creates an instance that configures VLANs on a MikroTik device
+
+    :param ip: (str) IP address of the device
+    :param user: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param list_vlans: (list) List of VLANs with their parameters
+
+    Example of param_interfaces:
+        vlans =[{
+                    "name": "vlan-60",
+                    "id": 60,
+                    "ports": [
+                        "ether3",
+                        "ether4",
+                         ]
+                }]
+    """
 
     def __init__(self, ip, user, passwd, list_vlans=[]):
         super().__init__(ip, user, passwd)
 
         self.list_vlan = list_vlans
 
+        self.config_vlans()
+
 
     def config_vlans(self):
+
+        """
+        Function reads a JINJA template, fills it with VLAN data, and sends an
+        API SSL call with this data.
+        """
 
         apissl_payload = []
 
@@ -101,7 +237,7 @@ class ConfigVlan(Config):
             for port in vlan['ports']:
 
                 apissl_template = Template(open("templates/apissl_template/config_bridge_port.j2").read())
-                content = apissl_template.render(vlan={'id':vlan['id'],
+                content = apissl_template.render(vlan={'id':str(vlan['id']),
                                                        'port':port})
                 apissl_payload.append(content)
 
@@ -114,10 +250,7 @@ class ConfigVlan(Config):
         """for line in apissl_payload:
             with open('conf2.txt', "a") as f:
                 f.write(line)"""
-        
 
-        #a = ('/interface/bridge/port/add','=bridge=bridge1','=interface=ether4', '=pvid=150')
-        #a = ['/interface/bridge/port/add\n=bridge=bridge1\n=interface=eth3\n=pvid=150']
         self.request(apissl_payload)
 
 
@@ -132,13 +265,17 @@ passwd = 'cisco'
 interfaces = [
     {
     "interface":"ether3",
-    "comment": "Configured via APISSL",
-    "address": "2.2.2.1/32",
+    "ip_address": "2.2.2.1",
+    "subnetmask": "255.255.255.0",
+    "description": "Configured via APISSL",
+    "enabled": True
     },
     {
     "interface":"ether4",
-    "comment": "Configured via APISSL",
-    "address": "3.3.3.1/32",
+    "ip_address": "3.3.3.1",
+    "subnetmask": "255.255.255.0",
+    "description": "Configured via APISSL",
+    "enabled": True
     }
 ]
 
@@ -149,14 +286,14 @@ interfaces = [
 
 routes = [
     {
-        "destination": "172.168.30.0/24",
-        "next_hop": "5.5.5.5",
-        "distance": "1"
+        "destination_network": "172.168.30.0/24",
+        "nexthop": "5.5.5.5",
+        "distance": 1
     },
     {
-        "destination": "192.168.50.0/24",
-        "next_hop": "10.0.3.1",
-        "distance": "5"
+        "destination_network": "192.168.50.0/24",
+        "nexthop": "10.0.3.1",
+        "distance": 5
     }
 ]
 #a = ConfigStaticRoute(device_list[0],user,passwd,routes)
@@ -165,7 +302,7 @@ routes = [
 vlans =[
     {
         "name": "vlan-60",
-        "id": "60",
+        "id": 60,
         "ports": [
             "ether3",
             "ether4"
@@ -173,7 +310,7 @@ vlans =[
     },
     {
         "name": "vlan-70",
-        "id": "70",
+        "id": 70,
         "ports": [
             "ether5",
             "ether6"
@@ -181,5 +318,5 @@ vlans =[
     }
 ]
 
-a = ConfigVlan(device_list[0],user,passwd,vlans)
-a.config_vlans()
+#a = ConfigVlan(device_list[0],user,passwd,vlans)
+#a.config_vlans()

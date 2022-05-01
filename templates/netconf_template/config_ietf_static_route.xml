@@ -12,9 +12,9 @@
                   <ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ipv4-unicast-routing">
                      {% for route in route_list %}
                      <route>
-                        <destination-prefix>{{ route['destination_prefix'] }}</destination-prefix>
+                        <destination-prefix>{{ route['destination_network'] }}</destination-prefix>
                         <next-hop>
-                           <next-hop-address>{{ route['next_hop_address'] }}</next-hop-address>
+                           <next-hop-address>{{ route['nexthop'] }}</next-hop-address>
                         </next-hop>
                      </route>
                      {% endfor %}

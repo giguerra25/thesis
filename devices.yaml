@@ -1,0 +1,134 @@
+---
+
+- mgmt_ip: 172.16.1.2
+  username: giguerra
+  password: cisco
+  vendor: CISCO
+  ssh_port: 22
+  interfaces: 
+    - interface: Vlan177
+      ip_address: 10.77.1.68
+      subnetmask: 255.255.255.0
+      description: Configured via NAPALM
+      enabled: True
+    - interface: Vlan190
+      ip_address: 10.77.2.68
+      subnetmask: 255.255.255.0
+      description: Configured via NAPALM
+      enabled: True
+  routes: 
+    - destination_network: 1.1.1.0/24
+      nexthop: 172.16.1.254
+      distance: 10
+    - destination_network: 2.2.2.0/24
+      nexthop: 172.16.1.254
+      distance: 10
+  vlans:
+    - name: vlan-120
+      id: 120
+      ports:
+        - GigabitEthernet3/0
+        - GigabitEthernet3/1
+    - name: vlan-150
+      id: 150
+      ports:
+        - GigabitEthernet3/2
+        - GigabitEthernet3/3
+
+- mgmt_ip: 172.16.1.254
+  username: giguerra
+  password: cisco
+  vendor: CISCO
+  ssh_port: 22
+  netconf_port: 830
+  interfaces: 
+    - interface: GigabitEthernet1
+      ip_address: 10.10.10.1
+      subnetmask: 255.255.255.0
+      description: Configured via NETCONF
+      enabled: True
+    - interface: GigabitEthernet3
+      ip_address: 10.10.20.1
+      subnetmask: 255.255.255.0
+      description: Configured via NETCONF
+      enabled: True
+  routes: 
+    - destination_network: 1.1.1.0/24
+      nexthop: 10.0.0.2
+      distance: 10
+    - destination_network: 2.2.2.0/24
+      nexthop: 10.0.0.2
+      distance: 10
+
+- mgmt_ip: 10.0.0.2
+  username: giguerra
+  password: cisco
+  vendor: Mikrotik
+  ssh_port: 22
+  www-ssl_port: 443
+  api-ssl_port: 8729
+  interfaces: 
+    - interface: ether4
+      ip_address: 2.2.2.1
+      subnetmask: 255.255.255.0
+      description: Configured via RESTAPI
+      enabled: True
+    - interface: ether5
+      ip_address: 3.3.3.1
+      subnetmask: 255.255.255.0
+      description: Configured via RESTAPI
+      enabled: True
+  routes: 
+    - destination_network: 172.168.30.0/24
+      nexthop: 5.5.5.5
+      distance: 1
+    - destination_network: 192.168.50.0/24
+      nexthop: 10.0.3.1
+      distance: 5
+  vlans:
+    - name: vlan-80
+      id: 80
+      ports:
+        - ether4
+        - ether5
+    - name: vlan-90
+      id: 90
+      ports:
+        - ether6
+        - ether7
+
+- mgmt_ip: 10.0.0.6
+  username: giguerra
+  password: cisco
+  vendor: Mikrotik
+  ssh_port: 22
+  api-ssl_port: 8729
+  interfaces: 
+    - interface: ether3
+      ip_address: 2.2.2.1
+      subnetmask: 255.255.255.0
+      description: Configured via APISSL
+      enabled: True
+    - interface: ether4
+      ip_address: 3.3.3.1
+      subnetmask: 255.255.255.0
+      description: Configured via APISSL
+      enabled: True
+  routes: 
+    - destination_network: 172.168.30.0/24
+      nexthop: 5.5.5.5
+      distance: 1
+    - destination_network: 192.168.50.0/24
+      nexthop: 10.0.3.1
+      distance: 5
+  vlans:
+    - name: vlan-60
+      id: 60
+      ports:
+        - ether3
+        - ether4
+    - name: vlan-70
+      id: 70
+      ports:
+        - ether5
+        - ether6
