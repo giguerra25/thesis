@@ -201,14 +201,12 @@ filter_vlan = """
     xmlns="http://openconfig.net/yang/openconfig-vlan">
 
 </vlans>
-</filter>
-"""
+</filter>"""
 
 filter2 = """
 <filter>
 <memory-statistics xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-memory-oper">
 
 </memory-statistics>
-</filter>
-"""
+</filter>"""
 

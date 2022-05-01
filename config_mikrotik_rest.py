@@ -120,18 +120,14 @@ class ConfigInterface(Config):
         :param interfaces: (list) List of interfaces with their parameters
         """
 
-        from ipaddress import IPv4Network
-
         v = {}
         t = []
         for interface in interfaces:
 
             v["interface"] = interface["interface"]
             v["comment"] = interface["description"]
-
-            ip = IPv4Network((str(interface["ip_address"]),str(interface["subnetmask"])))
-
-            v["address"] = ip.with_prefixlen
+            v["address"] = interface["ip_address"]
+            v["network"] = interface["subnetmask"]
             v['disabled'] = 'no' if interface['enabled'] == True else 'yes'
             
             t.append(v)

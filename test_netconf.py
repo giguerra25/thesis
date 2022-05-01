@@ -6,9 +6,9 @@ device_list = ['172.16.1.2','172.16.1.254','10.0.0.2']
 user = 'giguerra'
 passwd = 'cisco'
 
-filter1 = constants.filter
+#filter1 = constants.filter
 
-filter2 = open("filter-ietf-interfaces.xml").read()
+filter2 = open("filter.xml").read()
 
 with manager.connect(host=device_list[1], port='830', username=user,password=passwd, device_params={'name':'csr'}, hostkey_verify=False) as m:
 

@@ -39,7 +39,7 @@ class Config():
                              hostkey_verify=False) as m:
 
             #print(m.connected)
-            #response = eval(rpc)
+            #print(payload)
             response = m.edit_config(payload,target="running")
 
         #response = xmltodict.parse(netconf_response.xml)["rpc-reply"]["data"]
@@ -73,9 +73,36 @@ class ConfigInterface(Config):
     def __init__(self, ip, user, passwd, param_interfaces:list):
         super().__init__(ip, user, passwd)
 
-        self.interfaces = param_interfaces
+        self.interfaces = self.changekeys_interface(param_interfaces)
 
         self.config_if()
+
+
+    def changekeys_interface(self,interfaces):
+
+        """
+        Function changes keys from data read in YAML file to suitable keys 
+        for NETCONF RPC with datastore "urn:ietf:params:xml:ns:yang:ietf-interfaces" 
+        body data format.
+
+        :param interfaces: (list) List of interfaces with their parameters
+        """
+
+        v = {}
+        t = []
+        for interface in interfaces:
+
+            v["interface"] = interface["interface"]
+            v["ip_address"] = interface["ip_address"]
+            v["subnetmask"] = interface["subnetmask"]
+            v["description"] = interface["description"]
+            v["enabled"] = 'true' if interface["enabled"] == True else 'false'
+
+            t.append(v)
+            v = {}
+        
+        return t
+
 
 
     def config_if(self):

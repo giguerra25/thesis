@@ -6,12 +6,12 @@
   vendor: CISCO
   ssh_port: 22
   interfaces: 
-    - interface: Vlan177
+    - interface: Vlan100
       ip_address: 10.77.1.68
       subnetmask: 255.255.255.0
       description: Configured via NAPALM
       enabled: True
-    - interface: Vlan190
+    - interface: Vlan110
       ip_address: 10.77.2.68
       subnetmask: 255.255.255.0
       description: Configured via NAPALM
@@ -24,13 +24,13 @@
       nexthop: 172.16.1.254
       distance: 10
   vlans:
-    - name: vlan-120
-      id: 120
+    - name: vlan-100
+      id: 100
       ports:
         - GigabitEthernet3/0
         - GigabitEthernet3/1
-    - name: vlan-150
-      id: 150
+    - name: vlan-110
+      id: 110
       ports:
         - GigabitEthernet3/2
         - GigabitEthernet3/3
