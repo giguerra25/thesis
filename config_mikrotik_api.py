@@ -74,18 +74,16 @@ class ConfigInterface(Config):
         :param interfaces: (list) List of interfaces with their parameters 
         """
 
-        from ipaddress import IPv4Network
 
         v = {}
         t = []
         for interface in interfaces:
 
             v["interface"] = interface["interface"]
-            v["comment"] = interface["description"]
-
-            ip = IPv4Network((str(interface["ip_address"]),str(interface["subnetmask"])))
-
-            v["address"] = ip.with_prefixlen
+            #hack to solve problem about sending description with API SSL
+            v["comment"] = interface["description"].replace(' ','_') 
+            v["address"] = interface["ip_address"]
+            v["network"] = interface["subnetmask"]
             v['disabled'] = 'no' if interface['enabled'] == True else 'yes'
             
             t.append(v)
@@ -108,7 +106,7 @@ class ConfigInterface(Config):
         for intf in self.interfaces:
             apissl_payload.append(apissl_template.render(interface=intf))
 
-        print(apissl_payload)
+        #print(apissl_payload)
 
         self.request(apissl_payload)
 
@@ -143,8 +141,8 @@ class ConfigStaticRoute(Config):
     def changekeys_route(self,routes):
 
         """
-        Function changes keys from data read in YAML file
-        to suitable keys for REST API body data format
+        Function makes string values of nexthop and distance for API SSL 
+        body data format
 
         :param routes: (list) List of routes with their parameters
         """
@@ -153,8 +151,8 @@ class ConfigStaticRoute(Config):
         t = []
         for route in routes:
 
-            v["dst-address"] = route["destination_network"]
-            v["gateway"] = str(route["nexthop"])
+            v["destination_network"] = route["destination_network"]
+            v["nexthop"] = str(route["nexthop"])
             v["distance"] = str(route["distance"])
             t.append(v)
             v = {}
