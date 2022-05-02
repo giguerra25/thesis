@@ -19,18 +19,17 @@ import config_cisco_netconf
 import config_mikrotik_rest
 import os
 
-#requests.exceptions.SSLError: HTTPSConnectionPool(host='10.0.0.6', port=443): Max retries exceeded with url: /rest/system/resource (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1131)')))
+# requests.exceptions.SSLError: HTTPSConnectionPool(host='10.0.0.6', port=443): Max retries exceeded with url: /rest/system/resource (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1131)')))
 from requests.exceptions import SSLError
-#ncclient.transport.errors.SSHError: Could not open socket to 172.16.1.2:830
+
+# ncclient.transport.errors.SSHError: Could not open socket to 172.16.1.2:830
 from ncclient.transport.errors import SSHError
 
 
-
-
-def backup_cisco(ip,username,passwd,ports):
+def backup_cisco(ip, username, passwd, ports):
 
     """
-    Function selects one management interface [NETCONF, CLI] to make backup of a 
+    Function selects one management interface [NETCONF, CLI] to make backup of a
     Cisco device.
 
     :param ip: (str) IP address of the device
@@ -39,23 +38,23 @@ def backup_cisco(ip,username,passwd,ports):
     :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
     """
 
-    print('backup cisco')
+    print("backup cisco")
 
-    if isinstance(ports['netconf_port'],int):
+    if isinstance(ports["netconf_port"], int):
 
-        backupNetconf(ip,username,passwd)
+        backupNetconf(ip, username, passwd)
         return
 
-    if isinstance(ports['ssh_port'],int): 
+    if isinstance(ports["ssh_port"], int):
 
-        backupNapalm(ip,username,passwd)
+        backupNapalm(ip, username, passwd)
         return
 
 
-def backup_mikrotik(ip,username,passwd,ports):
+def backup_mikrotik(ip, username, passwd, ports):
 
     """
-    Function selects one management interface [REST API, SSL API] to make backup of a 
+    Function selects one management interface [REST API, SSL API] to make backup of a
     MikroTik device.
 
     :param ip: (str) IP address of the device
@@ -64,23 +63,23 @@ def backup_mikrotik(ip,username,passwd,ports):
     :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
     """
 
-    print('backup mikrotik')
+    print("backup mikrotik")
 
-    if isinstance(ports['www-ssl_port'],int):
+    if isinstance(ports["www-ssl_port"], int):
 
-        backupRestApi(ip,username,passwd)
+        backupRestApi(ip, username, passwd)
         return
 
-    if isinstance(ports['api-ssl_port'],int): 
+    if isinstance(ports["api-ssl_port"], int):
 
-        backupSSLApi(ip,username,passwd)
+        backupSSLApi(ip, username, passwd)
         return
 
 
-def restore_backup_cisco(file,ip,username,passwd,ports):
+def restore_backup_cisco(file, ip, username, passwd, ports):
 
     """
-    Function selects one management interface [NETCONF, CLI] to restore  
+    Function selects one management interface [NETCONF, CLI] to restore
     configuration in a Cisco device.
 
     :param ip: (str) IP address of the device
@@ -89,25 +88,25 @@ def restore_backup_cisco(file,ip,username,passwd,ports):
     :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
     """
 
-    print('restoring cisco')
+    print("restoring cisco")
 
-    if isinstance(ports['netconf_port'],int):
+    if isinstance(ports["netconf_port"], int):
 
-        print('using NETCONF to restore')
-        restoreNetconf(file,ip,username,passwd)
+        print("using NETCONF to restore")
+        restoreNetconf(file, ip, username, passwd)
         return
 
-    if isinstance(ports['ssh_port'],int): 
+    if isinstance(ports["ssh_port"], int):
 
-        print('using NAPALM to restore')
-        restoreNapalm(file,ip,username,passwd)
+        print("using NAPALM to restore")
+        restoreNapalm(file, ip, username, passwd)
         return
 
 
-def restore_backup_mikrotik(file,ip,username,passwd,ports):
+def restore_backup_mikrotik(file, ip, username, passwd, ports):
 
     """
-    Function selects one management interface [REST API, SSL API] to restore  
+    Function selects one management interface [REST API, SSL API] to restore
     configuration in a MikroTik device.
 
     :param ip: (str) IP address of the device
@@ -116,24 +115,23 @@ def restore_backup_mikrotik(file,ip,username,passwd,ports):
     :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
     """
 
-    print('restoring mikrotik')
+    print("restoring mikrotik")
 
-    if isinstance(ports['www-ssl_port'],int):
+    if isinstance(ports["www-ssl_port"], int):
 
-        restoreRestApi(file,ip,username,passwd)
+        restoreRestApi(file, ip, username, passwd)
         return
 
-    if isinstance(ports['api-ssl_port'],int): 
+    if isinstance(ports["api-ssl_port"], int):
 
-        restoreSSLApi(file,ip,username,passwd)
+        restoreSSLApi(file, ip, username, passwd)
         return
 
 
-
-def config_cisco(type,ip,username,passwd,config_data,ports):
+def config_cisco(type, ip, username, passwd, config_data, ports):
 
     """
-    Function selects one management interface [NETCONF, CLI] to make a  
+    Function selects one management interface [NETCONF, CLI] to make a
     configuration in a Cisco device.
 
     :param type: (str) String indicates what configurations will be done
@@ -143,40 +141,46 @@ def config_cisco(type,ip,username,passwd,config_data,ports):
     :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
     """
 
-    if type == 'static':
+    if type == "static":
 
-        if isinstance(ports['netconf_port'],int):
-            config_cisco_netconf.ConfigStaticRoute(ip, username, passwd, config_data)
+        if isinstance(ports["netconf_port"], int):
+            config_cisco_netconf.ConfigStaticRoute(
+                ip, username, passwd, config_data
+            )
             return
-        if isinstance(ports['ssh_port'],int): 
-            config_cisco_napalm.ConfigStaticRoute(ip, username, passwd, config_data)
-            return
-        
-    if type == 'interface':
-        
-        if isinstance(ports['netconf_port'],int):
-            config_cisco_netconf.ConfigInterface(ip, username, passwd, config_data)
-            return
-        if isinstance(ports['ssh_port'],int):
-            config_cisco_napalm.ConfigInterface(ip, username, passwd, config_data)
+        if isinstance(ports["ssh_port"], int):
+            config_cisco_napalm.ConfigStaticRoute(
+                ip, username, passwd, config_data
+            )
             return
 
+    if type == "interface":
 
-    if type == 'vlans':
+        if isinstance(ports["netconf_port"], int):
+            config_cisco_netconf.ConfigInterface(
+                ip, username, passwd, config_data
+            )
+            return
+        if isinstance(ports["ssh_port"], int):
+            config_cisco_napalm.ConfigInterface(
+                ip, username, passwd, config_data
+            )
+            return
 
-        if isinstance(ports['ssh_port'],int):
+    if type == "vlans":
+
+        if isinstance(ports["ssh_port"], int):
             config_cisco_napalm.ConfigVlan(ip, username, passwd, config_data)
             return
-        if isinstance(ports['netconf_port'],int):
+        if isinstance(ports["netconf_port"], int):
             config_cisco_netconf.ConfigVlan(ip, username, passwd, config_data)
             return
 
-        
 
-def config_mikrotik(type,ip,username,passwd,config_data,ports):
+def config_mikrotik(type, ip, username, passwd, config_data, ports):
 
     """
-    Function selects one management interface [REST API, SSL API] to make a  
+    Function selects one management interface [REST API, SSL API] to make a
     configuration in a MikroTik device.
 
     :param type: (str) String indicates what configurations will be done
@@ -186,39 +190,46 @@ def config_mikrotik(type,ip,username,passwd,config_data,ports):
     :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
     """
 
-    if type == 'static':
+    if type == "static":
 
-        if isinstance(ports['www-ssl_port'],int):
-            config_mikrotik_rest.ConfigStaticRoute(ip, username, passwd, config_data)
+        if isinstance(ports["www-ssl_port"], int):
+            config_mikrotik_rest.ConfigStaticRoute(
+                ip, username, passwd, config_data
+            )
             return
-        if isinstance(ports['api-ssl_port'],int):
-            config_mikrotik_api.ConfigStaticRoute(ip, username, passwd, config_data)
-            return
-    
-    if type == 'interface':
-
-        if isinstance(ports['www-ssl_port'],int):
-            config_mikrotik_rest.ConfigInterface(ip, username, passwd, config_data)
-            return
-        if isinstance(ports['api-ssl_port'],int):
-            config_mikrotik_api.ConfigInterface(ip, username, passwd, config_data)
+        if isinstance(ports["api-ssl_port"], int):
+            config_mikrotik_api.ConfigStaticRoute(
+                ip, username, passwd, config_data
+            )
             return
 
-    if type == 'vlans':
+    if type == "interface":
 
-        if isinstance(ports['www-ssl_port'],int):
+        if isinstance(ports["www-ssl_port"], int):
+            config_mikrotik_rest.ConfigInterface(
+                ip, username, passwd, config_data
+            )
+            return
+        if isinstance(ports["api-ssl_port"], int):
+            config_mikrotik_api.ConfigInterface(
+                ip, username, passwd, config_data
+            )
+            return
+
+    if type == "vlans":
+
+        if isinstance(ports["www-ssl_port"], int):
             config_mikrotik_rest.ConfigVlan(ip, username, passwd, config_data)
             return
-        if isinstance(ports['api-ssl_port'],int):
+        if isinstance(ports["api-ssl_port"], int):
             config_mikrotik_api.ConfigVlan(ip, username, passwd, config_data)
             return
-        
 
 
-def gathering_cisco(type,ip,username,passwd,ports):
+def gathering_cisco(type, ip, username, passwd, ports):
 
     """
-    Function selects one management interface [NETCONF, CLI] to collect data from a  
+    Function selects one management interface [NETCONF, CLI] to collect data from a
     Cisco device.
 
     :param type: (str) String indicates what data will be collected
@@ -227,35 +238,35 @@ def gathering_cisco(type,ip,username,passwd,ports):
     :param passwd: (str)
     :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
     """
-    
-    print('gathering data cisco')
 
-    if type == 'inventory':
+    print("gathering data cisco")
 
-        if isinstance(ports['netconf_port'],int):
+    if type == "inventory":
 
-            gatherCiscoInventoryNetconf(ip,username,passwd).inventory_dict()
+        if isinstance(ports["netconf_port"], int):
+
+            gatherCiscoInventoryNetconf(ip, username, passwd).inventory_dict()
             return
 
-        if isinstance(ports['ssh_port'],int): 
+        if isinstance(ports["ssh_port"], int):
 
-            gatherCiscoInventoryNapalm(ip,username,passwd).inventory_dict()
-            return
-    
-    elif type == 'capacity':
-
-        if isinstance(ports['netconf_port'],int):
-
-            gatherCiscoCapacityNetconf(ip,username,passwd).capacity_dict()
+            gatherCiscoInventoryNapalm(ip, username, passwd).inventory_dict()
             return
 
-        if isinstance(ports['ssh_port'],int): 
+    elif type == "capacity":
 
-            gatherCiscoCapacityNapalm(ip,username,passwd).capacity_dict()
+        if isinstance(ports["netconf_port"], int):
+
+            gatherCiscoCapacityNetconf(ip, username, passwd).capacity_dict()
+            return
+
+        if isinstance(ports["ssh_port"], int):
+
+            gatherCiscoCapacityNapalm(ip, username, passwd).capacity_dict()
             return
 
 
-def gathering_mikrotik(type,ip,username,passwd,ports):
+def gathering_mikrotik(type, ip, username, passwd, ports):
 
     """
     Function selects one management interface [REST API, SSL API] to collect data from
@@ -267,37 +278,37 @@ def gathering_mikrotik(type,ip,username,passwd,ports):
     :param passwd: (str)
     :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
     """
-    
-    print('gathering data mikrotik')
 
-    if type == 'inventory':
+    print("gathering data mikrotik")
 
-        if isinstance(ports['www-ssl_port'],int):
+    if type == "inventory":
 
-            gatherMikrotikInventoryRest(ip,username,passwd).inventory_dict()
+        if isinstance(ports["www-ssl_port"], int):
+
+            gatherMikrotikInventoryRest(ip, username, passwd).inventory_dict()
             return
 
-        if isinstance(ports['api-ssl_port'],int): 
+        if isinstance(ports["api-ssl_port"], int):
 
-            gatherMikrotikInventoryApi(ip,username,passwd).inventory_dict()
-            return
-    
-    elif type == 'capacity':
-
-        if isinstance(ports['www-ssl_port'],int):
-
-            gatherMikrotikCapacityRest(ip,username,passwd).capacity_dict()
+            gatherMikrotikInventoryApi(ip, username, passwd).inventory_dict()
             return
 
-        if isinstance(ports['api-ssl_port'],int): 
+    elif type == "capacity":
 
-            gatherMikrotikCapacityApi(ip,username,passwd).capacity_dict()
+        if isinstance(ports["www-ssl_port"], int):
+
+            gatherMikrotikCapacityRest(ip, username, passwd).capacity_dict()
             return
-    
+
+        if isinstance(ports["api-ssl_port"], int):
+
+            gatherMikrotikCapacityApi(ip, username, passwd).capacity_dict()
+            return
+
 
 def main():
 
-    #STRINGS USED ON MENU AND SUBMENUS
+    # STRINGS USED ON MENU AND SUBMENUS
     TITLE = """\nNET_TOOL\n 
     Scripts for Network Automation on Cisco and MikroTik\n"""
     SUBTITLE1 = "\nTypes of reports\n"
@@ -315,265 +326,290 @@ def main():
     TYPE_CONFIG_2 = "Configure interfaces"
     TYPE_CONFIG_3 = "Configure VLANs"
 
+    main_menu = [
+        "[a] " + ITEM_BACKUP,
+        "[b] " + ITEM_RESTORE,
+        "[c] " + ITEM_REPORT,
+        "[d] " + ITEM_CONFIG,
+        "[q] quit",
+    ]
 
-    main_menu = ["[a] "+ITEM_BACKUP, 
-                 "[b] "+ITEM_RESTORE, 
-                 "[c] "+ITEM_REPORT, 
-                 "[d] "+ITEM_CONFIG,
-                 "[q] quit"]
+    sub_menu1 = [
+        "[a] " + REPORT_TYPE_1, 
+        "[b] " + REPORT_TYPE_2, 
+        "[d] go back"
+    ]
 
-    sub_menu1 = ["[a] "+REPORT_TYPE_1, 
-                 "[b] "+REPORT_TYPE_2,
-                 "[d] go back"]
-    
-    sub_menu2 = ["[a] "+TYPE_CONFIG_1, 
-                "[b] "+TYPE_CONFIG_2,
-                "[c] "+TYPE_CONFIG_3, 
-                "[d] go back"]
+    sub_menu2 = [
+        "[a] " + TYPE_CONFIG_1,
+        "[b] " + TYPE_CONFIG_2,
+        "[c] " + TYPE_CONFIG_3,
+        "[d] go back",
+    ]
 
     terminal_menu = TerminalMenu(main_menu, title=TITLE)
     terminal_submenu1 = TerminalMenu(sub_menu1, title=SUBTITLE1)
     terminal_submenu2 = TerminalMenu(sub_menu2, title=SUBTITLE2)
 
-    #MAIN MENU
-    #the letter in the square brackets too can use to index the options
+    # MAIN MENU
+    # the letter in the square brackets too can use to index the options
     loop = True
     while loop:
         choice = main_menu[terminal_menu.show()]
 
-        #BACKUP
+        # BACKUP
         if choice == main_menu[0]:
-            
+
             list_devices = readfile_devices()
-            
+
             # Make backup sequentially for every device
             for device in list_devices:
 
-                ip = device['mgmt_ip']
-                username = device['username']
-                passwd = device['password']
-                vendor = device['vendor']
+                ip = device["mgmt_ip"]
+                username = device["username"]
+                passwd = device["password"]
+                vendor = device["vendor"]
                 ports = ports_mgmt(device)
 
                 if vendor in ("Cisco", "CISCO", "cisco"):
 
-                    backup_cisco(ip,username,passwd,ports)
+                    backup_cisco(ip, username, passwd, ports)
 
                 elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
-                    backup_mikrotik(ip,username,passwd,ports)
+                    backup_mikrotik(ip, username, passwd, ports)
 
-            #loop = False
+            # loop = False
 
-        #RESTORE
+        # RESTORE
         elif choice == main_menu[1]:
-            
+
             list_devices = readfile_devices()
-            
+
             # Make restore sequentially for every device
             for device in list_devices:
 
-                ip = device['mgmt_ip']
-                username = device['username']
-                passwd = device['password']
-                vendor = device['vendor']
+                ip = device["mgmt_ip"]
+                username = device["username"]
+                passwd = device["password"]
+                vendor = device["vendor"]
                 ports = ports_mgmt(device)
 
-                #Submenu to show backups of the device
+                # Submenu to show backups of the device
                 file_list = show_backups(ip)
                 file_list.append("go back")
                 SUBTITLE3 = "\nOptions for device {}:\n".format(ip)
-                terminal_submenu3 = TerminalMenu(file_list,title=SUBTITLE3)
+                terminal_submenu3 = TerminalMenu(file_list, title=SUBTITLE3)
 
                 sub_loop3 = True
                 while sub_loop3:
                     choice = file_list[terminal_submenu3.show()]
 
-                    #Selection of a backup file
+                    # Selection of a backup file
                     if choice != "go back":
-                        
+
                         pwd = os.getcwd()
-                        file =  pwd + '/backup_config/' + ip + '/' + choice
+                        file = pwd + "/backup_config/" + ip + "/" + choice
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
-                            restore_backup_cisco(file,ip,username,passwd,ports)
+                            restore_backup_cisco(
+                                file, ip, username, passwd, ports
+                            )
                             sub_loop3 = False
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
-                            restore_backup_mikrotik(file,ip,username,passwd,ports)
+                            restore_backup_mikrotik(
+                                file, ip, username, passwd, ports
+                            )
                             sub_loop3 = False
-                    
-                    #Exit Restore Submenu
+
+                    # Exit Restore Submenu
                     elif choice == "go back":
                         sub_loop3 = False
 
-        #REPORTING
+        # REPORTING
         elif choice == main_menu[2]:
-            
+
             sub_loop1 = True
             while sub_loop1:
                 choice = sub_menu1[terminal_submenu1.show()]
 
-                #Inventory report
+                # Inventory report
                 if choice == sub_menu1[0]:
-                    print (choice)
+                    print(choice)
 
-                    type = 'inventory'
+                    type = "inventory"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
 
-                        ip = device['mgmt_ip']
-                        username = device['username']
-                        passwd = device['password']
-                        vendor = device['vendor']
+                        ip = device["mgmt_ip"]
+                        username = device["username"]
+                        passwd = device["password"]
+                        vendor = device["vendor"]
                         ports = ports_mgmt(device)
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
-                            gathering_cisco(type,ip,username,passwd,ports)
+                            gathering_cisco(type, ip, username, passwd, ports)
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
-                            gathering_mikrotik(type,ip,username,passwd,ports)
+                            gathering_mikrotik(
+                                type, ip, username, passwd, ports
+                            )
 
                         devices_gathered.append(ip)
-                    
-                    #Report is generated with a list of devices
-                    a = Report(devices_gathered,type)
+
+                    # Report is generated with a list of devices
+                    a = Report(devices_gathered, type)
                     a.render_pdfreport()
 
-
-                #Capacity report
+                # Capacity report
                 elif choice == sub_menu1[1]:
-                    print (choice)
+                    print(choice)
 
-                    type = 'capacity'
+                    type = "capacity"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
 
-                        ip = device['mgmt_ip']
-                        username = device['username']
-                        passwd = device['password']
-                        vendor = device['vendor']
+                        ip = device["mgmt_ip"]
+                        username = device["username"]
+                        passwd = device["password"]
+                        vendor = device["vendor"]
                         ports = ports_mgmt(device)
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
-                            gathering_cisco(type,ip,username,passwd,ports)
+                            gathering_cisco(type, ip, username, passwd, ports)
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
-                            gathering_mikrotik(type,ip,username,passwd,ports)
+                            gathering_mikrotik(
+                                type, ip, username, passwd, ports
+                            )
 
                         devices_gathered.append(ip)
-                    
-                    #Report is generated with a list of devices
-                    a = Report(devices_gathered,type)
+
+                    # Report is generated with a list of devices
+                    a = Report(devices_gathered, type)
                     a.render_pdfreport()
 
-                #Exit Reporting Submenu
+                # Exit Reporting Submenu
                 elif choice == sub_menu1[2]:
                     sub_loop1 = False
-     
-        #CONFIGURATION
+
+        # CONFIGURATION
         elif choice == main_menu[3]:
-            
+
             sub_loop2 = True
             while sub_loop2:
                 choice = sub_menu2[terminal_submenu2.show()]
 
-                #Configure Static routes
+                # Configure Static routes
                 if choice == sub_menu2[0]:
-                    print (choice)
+                    print(choice)
 
-                    type = 'static'
+                    type = "static"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
 
-                        ip = device['mgmt_ip']
-                        username = device['username']
-                        passwd = device['password']
-                        vendor = device['vendor']
-                        config_data = device['routes']
+                        ip = device["mgmt_ip"]
+                        username = device["username"]
+                        passwd = device["password"]
+                        vendor = device["vendor"]
+                        config_data = device["routes"]
                         ports = ports_mgmt(device)
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
-                            config_cisco(type,ip,username,passwd,config_data,ports)
+                            config_cisco(
+                                type, ip, username, passwd, config_data, ports
+                            )
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
-                            config_mikrotik(type,ip,username,passwd,config_data,ports)
+                            config_mikrotik(
+                                type, ip, username, passwd, config_data, ports
+                            )
 
-                #Configure interfaces
+                # Configure interfaces
                 elif choice == sub_menu2[1]:
-                    print (choice)
+                    print(choice)
 
-                    type = 'interface'
+                    type = "interface"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
 
-                        ip = device['mgmt_ip']
-                        username = device['username']
-                        passwd = device['password']
-                        vendor = device['vendor']
-                        config_data = device['interfaces']
+                        ip = device["mgmt_ip"]
+                        username = device["username"]
+                        passwd = device["password"]
+                        vendor = device["vendor"]
+                        config_data = device["interfaces"]
                         ports = ports_mgmt(device)
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
-                            config_cisco(type,ip,username,passwd,config_data,ports)
+                            config_cisco(
+                                type, ip, username, passwd, config_data, ports
+                            )
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
-                            config_mikrotik(type,ip,username,passwd,config_data,ports)
-                
-                #Configure VLANs
+                            config_mikrotik(
+                                type, ip, username, passwd, config_data, ports
+                            )
+
+                # Configure VLANs
                 elif choice == sub_menu2[2]:
-                    print (choice)
+                    print(choice)
 
-                    type = 'vlans'
+                    type = "vlans"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
 
-                        ip = device['mgmt_ip']
-                        username = device['username']
-                        passwd = device['password']
-                        vendor = device['vendor']
-                        config_data = device['vlans']
+                        ip = device["mgmt_ip"]
+                        username = device["username"]
+                        passwd = device["password"]
+                        vendor = device["vendor"]
+                        config_data = device["vlans"]
                         ports = ports_mgmt(device)
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
-                            config_cisco(type,ip,username,passwd,config_data,ports)
+                            config_cisco(
+                                type, ip, username, passwd, config_data, ports
+                            )
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
-                            config_mikrotik(type,ip,username,passwd,config_data,ports)
+                            config_mikrotik(
+                                type, ip, username, passwd, config_data, ports
+                            )
 
-                #Exit COnfiguration Submenu
+                # Exit COnfiguration Submenu
                 elif choice == sub_menu2[3]:
                     sub_loop2 = False
 
-        #EXIT MAIN MENU
+        # EXIT MAIN MENU
         elif choice == main_menu[4]:
             loop = False
+
 
 main()
