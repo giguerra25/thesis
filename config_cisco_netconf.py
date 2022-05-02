@@ -1,7 +1,8 @@
 from ncclient import manager
 from jinja2 import Template
 
-class Config():
+
+class Config:
 
     """
     This is the base class we have to inherit from when writing configuration
@@ -17,37 +18,35 @@ class Config():
         self.user = user
         self.passwd = passwd
 
-
-
-    def request(self,payload):
+    def request(self, payload):
 
         """
         Function makes a NETCONF RPC call, sends configuration data to merge it with the
         running configuration on a device
 
-        :param payload: (str) It is the configuration data, which must be rooted in the 
-                              `config` element. It can be specified either as a 
+        :param payload: (str) It is the configuration data, which must be rooted in the
+                              `config` element. It can be specified either as a
                               string or an :class:`~xml.etree.ElementTree.Element`.
         """
 
+        with manager.connect(
+            host=self.ip,
+            port="830",
+            username=self.user,
+            password=self.passwd,
+            device_params={"name": "csr"},
+            hostkey_verify=False,
+        ) as m:
 
-        with manager.connect(host=self.ip, 
-                             port='830', 
-                             username=self.user,
-                             password=self.passwd, 
-                             device_params={'name':'csr'}, 
-                             hostkey_verify=False) as m:
+            # print(m.connected)
+            # print(payload)
+            response = m.edit_config(payload, target="running")
 
-            #print(m.connected)
-            #print(payload)
-            response = m.edit_config(payload,target="running")
+        # response = xmltodict.parse(netconf_response.xml)["rpc-reply"]["data"]
 
-        #response = xmltodict.parse(netconf_response.xml)["rpc-reply"]["data"]
-        
-        #date = self.timestamp()
+        # date = self.timestamp()
 
         return response
-
 
 
 class ConfigInterface(Config):
@@ -70,19 +69,18 @@ class ConfigInterface(Config):
                     }]
     """
 
-    def __init__(self, ip, user, passwd, param_interfaces:list):
+    def __init__(self, ip, user, passwd, param_interfaces: list):
         super().__init__(ip, user, passwd)
 
         self.interfaces = self.changekeys_interface(param_interfaces)
 
         self.config_if()
 
-
-    def changekeys_interface(self,interfaces):
+    def changekeys_interface(self, interfaces):
 
         """
-        Function changes keys from data read in YAML file to suitable keys 
-        for NETCONF RPC with datastore "urn:ietf:params:xml:ns:yang:ietf-interfaces" 
+        Function changes keys from data read in YAML file to suitable keys
+        for NETCONF RPC with datastore "urn:ietf:params:xml:ns:yang:ietf-interfaces"
         body data format.
 
         :param interfaces: (list) List of interfaces with their parameters
@@ -96,14 +94,12 @@ class ConfigInterface(Config):
             v["ip_address"] = interface["ip_address"]
             v["subnetmask"] = interface["subnetmask"]
             v["description"] = interface["description"]
-            v["enabled"] = 'true' if interface["enabled"] == True else 'false'
+            v["enabled"] = "true" if interface["enabled"] == True else "false"
 
             t.append(v)
             v = {}
-        
+
         return t
-
-
 
     def config_if(self):
 
@@ -112,13 +108,18 @@ class ConfigInterface(Config):
         NETCONF RPC call with this data.
         """
 
-        netconf_template = Template(open("templates/netconf_template/config_ietf_interfaces.xml").read())
-        
+        netconf_template = Template(
+            open(
+                "templates/netconf_template/config_ietf_interfaces.xml"
+            ).read()
+        )
+
         netconf_payload = netconf_template.render(interfaces=self.interfaces)
-        #print(payload)
+        # print(payload)
         response = self.request(netconf_payload)
 
-        #return response
+        # return response
+
 
 class ConfigStaticRoute(Config):
 
@@ -145,7 +146,6 @@ class ConfigStaticRoute(Config):
 
         self.config_routes()
 
-
     def config_routes(self):
 
         """
@@ -153,41 +153,43 @@ class ConfigStaticRoute(Config):
         NETCONF RPC call with this data.
         """
 
-        netconf_template = Template(open("templates/netconf_template/config_ietf_static_route.xml").read())
+        netconf_template = Template(
+            open(
+                "templates/netconf_template/config_ietf_static_route.xml"
+            ).read()
+        )
 
         netconf_payload = netconf_template.render(route_list=self.list_routes)
-        #print(netconf_payload)
+        # print(netconf_payload)
         response = self.request(netconf_payload)
 
-        #return response
-
-
+        # return response
 
 
 param = {
-    "interface":"GigabitEthernet1",
+    "interface": "GigabitEthernet1",
     "description": "Configured via NETCONF",
     "ip_address": "10.10.10.1",
-    "subnetmask":"255.255.255.0",
-    "enabled": True
+    "subnetmask": "255.255.255.0",
+    "enabled": True,
 }
-#a = ConfigInterface('172.16.1.254','giguerra','cisco',param)
-#print(a.config_if())
+# a = ConfigInterface('172.16.1.254','giguerra','cisco',param)
+# print(a.config_if())
 
 routes = [
     {
-        "destination_network":"1.1.1.0/24",
+        "destination_network": "1.1.1.0/24",
         "nexthop": "10.0.0.2",
-        "distance": 10
+        "distance": 10,
     },
     {
-        "destination_network":"2.2.2.0/24",
+        "destination_network": "2.2.2.0/24",
         "nexthop": "10.0.0.2",
-        "distance": 10
-    }
+        "distance": 10,
+    },
 ]
 
-#a = ConfigStaticRoute('172.16.1.254','giguerra','cisco',routes)
-#print(a.config_routes())
+# a = ConfigStaticRoute('172.16.1.254','giguerra','cisco',routes)
+# print(a.config_routes())
 
-#respuesta = """<rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="urn:uuid:fd989d21-29a0-42c2-9335-89918facf2fb" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"><ok/></rpc-reply>"""
+# respuesta = """<rpc-reply xmlns="urn:ietf:params:xml:ns:netconf:base:1.0" message-id="urn:uuid:fd989d21-29a0-42c2-9335-89918facf2fb" xmlns:nc="urn:ietf:params:xml:ns:netconf:base:1.0"><ok/></rpc-reply>"""

@@ -1,6 +1,7 @@
 import datetime, os
 from pathlib import Path
-#from tracemalloc import Snapshot
+
+# from tracemalloc import Snapshot
 import xmltodict
 import routeros_api
 import ssl
@@ -11,10 +12,9 @@ from netmiko import ConnectHandler
 from tinydb import TinyDB
 
 
-
-def create_pathdir(dir): 
+def create_pathdir(dir):
     """
-    Function returns the path of a directory. 
+    Function returns the path of a directory.
     if it does not exist the directories, it creates them.
 
     :param dir: (str) Path of the directory to be created "/path/to/dir".
@@ -23,15 +23,15 @@ def create_pathdir(dir):
     pwd = os.getcwd()
 
     try:
-        os.stat(pwd+dir)
-        
-    except:
-        Path(pwd+dir).mkdir(parents=True, exist_ok=True)
-    
-    #It gives full permissions to tftp Mikrotik users
-    Path(pwd+dir).chmod(mode=0o777)
+        os.stat(pwd + dir)
 
-    return pwd + dir + '/'
+    except:
+        Path(pwd + dir).mkdir(parents=True, exist_ok=True)
+
+    # It gives full permissions to tftp Mikrotik users
+    Path(pwd + dir).chmod(mode=0o777)
+
+    return pwd + dir + "/"
 
 
 def createPathBackup(ip):
@@ -44,12 +44,12 @@ def createPathBackup(ip):
     :param ip: (str) IP address of the device
     """
 
-    path = create_pathdir('/backup_config/'+ip)
+    path = create_pathdir("/backup_config/" + ip)
 
     return path
 
 
-def createNameBackup(ip,method):
+def createNameBackup(ip, method):
 
     """
     Function creates a filename composed of ip, timestamp, and management interface used.
@@ -59,8 +59,8 @@ def createNameBackup(ip,method):
     :param method: (str) MGMT interface used. Options [napalm, netconf, apissl, restapi]
     """
 
-    date = datetime.datetime.now().strftime('%d-%m-%-y_%H:%M')
-    name = ip + '_' + date + '_' + method
+    date = datetime.datetime.now().strftime("%d-%m-%-y_%H:%M")
+    name = ip + "_" + date + "_" + method
     return name
 
 
@@ -70,15 +70,15 @@ def timestamp():
     Function creates a timestamp
     """
 
-    date = datetime.datetime.now().strftime('%d-%m-%-y_%H:%M')
+    date = datetime.datetime.now().strftime("%d-%m-%-y_%H:%M")
 
     return date
 
 
-def send2db(ip,record,dir):
+def send2db(ip, record, dir):
 
     """
-    Function sends data to the JSON file (database) related to a device and returns 
+    Function sends data to the JSON file (database) related to a device and returns
     the record ID
 
     :param ip: (str) IP address of the device
@@ -87,7 +87,7 @@ def send2db(ip,record,dir):
     """
 
     path = create_pathdir(dir)
-    db = TinyDB('{}{}.json'.format(path,ip))
+    db = TinyDB("{}{}.json".format(path, ip))
     id = db.insert(record)
 
     return id
@@ -101,44 +101,43 @@ def stripTagXml(file):
     :param file: (str) The path of the file
     """
 
-    #remove first line with tag <?xml version="1.0" encoding="UTF-8"?>
+    # remove first line with tag <?xml version="1.0" encoding="UTF-8"?>
     # and remove second and last line with tag <rpc-reply>
-    with open(file, 'r') as fin:
+    with open(file, "r") as fin:
         data = fin.read().splitlines(True)
-    with open(file, 'w') as fout:
+    with open(file, "w") as fout:
         fout.writelines(data[2:-1])
-    
-    #convert xml to dict to change tag <data> for tag <config>
-    fileptr = open(file)
-    xml_content= fileptr.read()
-    file_dict=xmltodict.parse(xml_content)
-    data_dict = dict(file_dict)
-    data_dict['config'] = data_dict.pop('data')
-    #print(data_dict)
 
-    #convert dict to xml and write it into a file
-    config_xml=xmltodict.unparse(data_dict,pretty=True)
-    with open(file, 'w') as f:
+    # convert xml to dict to change tag <data> for tag <config>
+    fileptr = open(file)
+    xml_content = fileptr.read()
+    file_dict = xmltodict.parse(xml_content)
+    data_dict = dict(file_dict)
+    data_dict["config"] = data_dict.pop("data")
+    # print(data_dict)
+
+    # convert dict to xml and write it into a file
+    config_xml = xmltodict.unparse(data_dict, pretty=True)
+    with open(file, "w") as f:
         f.write(config_xml)
 
-    #remove first line with tag <?xml version="1.0" encoding="UTF-8"?>
-    with open(file, 'r') as fin:
+    # remove first line with tag <?xml version="1.0" encoding="UTF-8"?>
+    with open(file, "r") as fin:
         data = fin.read().splitlines(True)
-    with open(file, 'w') as fout:
+    with open(file, "w") as fout:
         fout.writelines(data[1:])
 
 
-#dir = os.getcwd()+'/backup_config/'
-#stripTagXml(dir+'R3copy.xml')
+# dir = os.getcwd()+'/backup_config/'
+# stripTagXml(dir+'R3copy.xml')
 
 
-#def moveFile(src,dst):
+# def moveFile(src,dst):
 
 #    shutil.move(src,dst)
 
 
-
-def rosApi(ip,username,password,api_commands):
+def rosApi(ip, username, password, api_commands):
 
     """
     Function to connect via api-ssl to a MikroTik device and make APISSL requests
@@ -155,34 +154,29 @@ def rosApi(ip,username,password,api_commands):
     list = ['/interface/bridge/port/add\n=bridge=bridge1\n=interface=eth3\n=pvid=150',
             '/interface/bridge/port/add\n=bridge=bridge1\n=interface=eth4\n=pvid=120']
     """
-    
-    #IF device uses API-SSL with certificate
+
+    # IF device uses API-SSL with certificate
     try:
-        router = routeros_api.Api(ip, 
-                    user=username, 
-                    password=password, 
-                    use_ssl=True
+        router = routeros_api.Api(
+            ip, user=username, password=password, use_ssl=True
         )
-    #If device uses API-SSL without a certificate 
+    # If device uses API-SSL without a certificate
     # more info here https://wiki.mikrotik.com/wiki/Manual:API-SSL
     except ssl.SSLError:
-    
-    # other solution here https://github.com/socialwifi/RouterOS-api/issues/35
-        context = ssl.create_default_context()  
-        context.check_hostname = False
-        context.set_ciphers('ADH:@SECLEVEL=0')
 
-        router = routeros_api.Api(ip, 
-                    user=username, 
-                    password=password, 
-                    use_ssl=True, 
-                    context=context
+        # other solution here https://github.com/socialwifi/RouterOS-api/issues/35
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        context.set_ciphers("ADH:@SECLEVEL=0")
+
+        router = routeros_api.Api(
+            ip, user=username, password=password, use_ssl=True, context=context
         )
-        
-    #try: 
+
+    # try:
     data_dict = router.talk(api_commands)
     return data_dict
-    #except:  #if feature was not implemented on routeros_api 
+    # except:  #if feature was not implemented on routeros_api
     #    data_dict = 'NotImplemented'
     #    return data_dict
 
@@ -203,11 +197,11 @@ def truncate(number, decimals=0):
     elif decimals == 0:
         return math.trunc(number)
 
-    factor = 10.0 ** decimals
+    factor = 10.0**decimals
     return math.trunc(number * factor) / factor
 
 
-def xmltree_tag(xml_string,tag):
+def xmltree_tag(xml_string, tag):
 
     """
     Function that walks through an XML tree looking for a node with an specific tag
@@ -218,13 +212,13 @@ def xmltree_tag(xml_string,tag):
     """
 
     from constants import tags
-    #tree = ET.parse(xml)
-    #root = tree.getroot()
+
+    # tree = ET.parse(xml)
+    # root = tree.getroot()
     root = ET.fromstring(xml_string)
 
-
     for descendant in root.iter(tags[tag]):
-    
+
         text = descendant.text
 
     return text
@@ -233,7 +227,7 @@ def xmltree_tag(xml_string,tag):
 def xmltree_core(xml_string):
 
     """
-    It is special function to count the number of CPU cores in a Cisco device using  
+    It is special function to count the number of CPU cores in a Cisco device using
     the '{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}name"' tag in NETCONF
 
     It returns a dictionary with: keys -  name of CPU cores
@@ -246,36 +240,36 @@ def xmltree_core(xml_string):
 
     root = ET.fromstring(xml_string)
 
-    name_cores=[]
-    perc_use=[]
+    name_cores = []
+    perc_use = []
     # loop for device with multiple cores
-    for descendant in root.iter(tags['cpu_used']["cpu_used_corename"]):
+    for descendant in root.iter(tags["cpu_used"]["cpu_used_corename"]):
         name_cores.append(descendant.text)
-    for descendant in root.iter(tags['cpu_used']["cpu_used_coreidle"]):
-        use = str(truncate(100-float(descendant.text),2))
+    for descendant in root.iter(tags["cpu_used"]["cpu_used_coreidle"]):
+        use = str(truncate(100 - float(descendant.text), 2))
         perc_use.append(use)
 
-    dict_cores={}
-    j=0
-    #Dictionary with key as name of CPU core, value as percentage of use
+    dict_cores = {}
+    j = 0
+    # Dictionary with key as name of CPU core, value as percentage of use
     for i in name_cores:
-        dict_cores[i]=perc_use[j]
-        j=j+1
+        dict_cores[i] = perc_use[j]
+        j = j + 1
 
-    #print(name_cores)
-    #print(perc_use)
-    #print(dict_cores)
-    
+    # print(name_cores)
+    # print(perc_use)
+    # print(dict_cores)
+
     return dict_cores
 
 
 def xmltree_countupdown(xml_string):
 
     """
-    It is special function to count the number of interfaces in a Cisco device using  
+    It is special function to count the number of interfaces in a Cisco device using
     the '"{http://openconfig.net/yang/interfaces}enabled"' tag in NETCONF
-    
-    It returns a 2-value tuple with: number of interfaces enabled, 
+
+    It returns a 2-value tuple with: number of interfaces enabled,
                                      number of interfaces disabled
 
     :param xml_string: (str) The XML object in string format
@@ -289,8 +283,9 @@ def xmltree_countupdown(xml_string):
     if_total = 0
     for descendant in root.iter(tags["interfaces_enable"]):
         if_total = if_total + 1
-        if descendant.text == 'true': if_up = if_up + 1
-    
+        if descendant.text == "true":
+            if_up = if_up + 1
+
     if_down = if_total - if_up
 
     return if_up, if_down
@@ -302,7 +297,7 @@ def readfile_devices():
     Function reads the YAML file with devices' information. It returns a dictionary
     """
 
-    file = input('\nPath to file: ')
+    file = input("\nPath to file: ")
 
     with open(file) as fh:
 
@@ -319,26 +314,28 @@ def ports_mgmt(data=dict):
     :param data: (dict) A dicitonary with device information
     """
 
-    ports={}
-    ports['ssh_port'] = data.get('ssh_port')
-    ports['netconf_port'] = data.get('netconf_port')
-    ports['api-ssl_port'] = data.get('api-ssl_port')
-    ports['www-ssl_port'] = data.get('www-ssl_port')
+    ports = {}
+    ports["ssh_port"] = data.get("ssh_port")
+    ports["netconf_port"] = data.get("netconf_port")
+    ports["api-ssl_port"] = data.get("api-ssl_port")
+    ports["www-ssl_port"] = data.get("www-ssl_port")
 
     return ports
 
 
-def netmikoconfig(ip,user,passwd,commands:list):
+def netmikoconfig(ip, user, passwd, commands: list):
 
     """
     Function sends a list of commands to a Cisco IOS device using Netmiko library
     """
 
-    device = {"device_type":'cisco_ios',
-                "ip":ip,
-                "username":user,
-                "global_delay_factor": 2,
-                "password":passwd}
+    device = {
+        "device_type": "cisco_ios",
+        "ip": ip,
+        "username": user,
+        "global_delay_factor": 2,
+        "password": passwd,
+    }
 
     net = ConnectHandler(**device)
     output = net.send_config_set(commands)
@@ -348,18 +345,19 @@ def netmikoconfig(ip,user,passwd,commands:list):
 def show_backups(ip):
 
     """
-    FUnction return a list with the backup files for the respective 
+    FUnction return a list with the backup files for the respective
     device identified with its IP under dir /backup_config
 
     :param ip: (str) IP address of the device
     """
     pwd = os.getcwd()
-    dir = pwd + '/backup_config/' + ip 
+    dir = pwd + "/backup_config/" + ip
     file_list = []
     for file in os.listdir(dir):
         file_list.append(file)
-    
+
     return file_list
 
-#print(xpath_hostname('response.xml'))
-#Path('/home/gabrielguerra/net_tool/gagaga').chmod(mode=0o777)
+
+# print(xpath_hostname('response.xml'))
+# Path('/home/gabrielguerra/net_tool/gagaga').chmod(mode=0o777)

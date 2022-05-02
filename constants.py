@@ -2,22 +2,20 @@
 
 
 tags = {
-
-        "hostname":"{http://cisco.com/ns/yang/Cisco-IOS-XE-native}hostname",
-        "sn":"{http://cisco.com/ns/yang/Cisco-IOS-XE-native}sn",
-        "os":"{http://cisco.com/ns/yang/Cisco-IOS-XE-native}version",
-        "model":"{http://cisco.com/ns/yang/Cisco-IOS-XE-native}pid",
-        "mem_used_KB":"{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}used-number",
-        "mem_used_%":"{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}used-percent",
-        "cpu_used":{
-            "cpu_used_corename": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}name",
-            "cpu_used_coreidle": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}idle",
-        },
-        "hdd_used_b": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}used-size",
-        "hdd_total_b": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}total-size",
-        "interfaces_enable":"{http://openconfig.net/yang/interfaces}enabled",
-    }
-
+    "hostname": "{http://cisco.com/ns/yang/Cisco-IOS-XE-native}hostname",
+    "sn": "{http://cisco.com/ns/yang/Cisco-IOS-XE-native}sn",
+    "os": "{http://cisco.com/ns/yang/Cisco-IOS-XE-native}version",
+    "model": "{http://cisco.com/ns/yang/Cisco-IOS-XE-native}pid",
+    "mem_used_KB": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}used-number",
+    "mem_used_%": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}used-percent",
+    "cpu_used": {
+        "cpu_used_corename": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}name",
+        "cpu_used_coreidle": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}idle",
+    },
+    "hdd_used_b": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}used-size",
+    "hdd_total_b": "{http://cisco.com/ns/yang/Cisco-IOS-XE-platform-software-oper}total-size",
+    "interfaces_enable": "{http://openconfig.net/yang/interfaces}enabled",
+}
 
 
 filter_hostname = """
@@ -129,7 +127,6 @@ filter_interfacesupdown = """
 """
 
 
-
 filter_interfacesipdown2 = """
 <filter>
 <interfaces-state 
@@ -156,7 +153,6 @@ filter_serialnumber2 = """
     </device-hardware>
 </device-hardware-data>
 </filter>"""
-
 
 
 filter_osversion2 = """
@@ -209,4 +205,3 @@ filter2 = """
 
 </memory-statistics>
 </filter>"""
-
