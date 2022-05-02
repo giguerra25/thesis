@@ -1,7 +1,5 @@
 from utils import rosApi
-from utils import truncate, create_pathdir, timestamp, send2db
-#import datetime
-#from tinydb import TinyDB
+from utils import truncate, timestamp, send2db
 
 
 
@@ -22,16 +20,6 @@ class Gather():
         self.passwd = passwd
 
 
-    '''def timestamp(self):
-
-        """
-        It creates a timestamp
-        """
-
-        date = datetime.datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
-
-        return date'''
-
     
     def request(self,api_command):
 
@@ -48,25 +36,6 @@ class Gather():
 
         return response,date
     
-
-    '''def send2db(self,ip,record,dir):
-
-        """
-        Function sends data to the JSON file (database) related to a device and returns 
-        the record ID
-
-        :param ip: (str) IP address of the device
-        :param record: (str) data to be saved into the JSON file
-        :param dir: (str) Path where exists the directory that has the JSON file
-        """
-
-        path = create_pathdir(dir)
-
-        db = TinyDB('{}{}.json'.format(path,ip))
-
-        id = db.insert(record)
-
-        return id'''
 
 
 class GatherInventory(Gather):
