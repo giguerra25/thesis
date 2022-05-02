@@ -29,6 +29,16 @@ from ncclient.transport.errors import SSHError
 
 def backup_cisco(ip,username,passwd,ports):
 
+    """
+    Function selects one management interface [NETCONF, CLI] to make backup of a 
+    Cisco device.
+
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
+    """
+
     print('backup cisco')
 
     if isinstance(ports['netconf_port'],int):
@@ -44,6 +54,16 @@ def backup_cisco(ip,username,passwd,ports):
 
 def backup_mikrotik(ip,username,passwd,ports):
 
+    """
+    Function selects one management interface [REST API, SSL API] to make backup of a 
+    MikroTik device.
+
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
+    """
+
     print('backup mikrotik')
 
     if isinstance(ports['www-ssl_port'],int):
@@ -58,6 +78,16 @@ def backup_mikrotik(ip,username,passwd,ports):
 
 
 def restore_backup_cisco(file,ip,username,passwd,ports):
+
+    """
+    Function selects one management interface [NETCONF, CLI] to restore  
+    configuration in a Cisco device.
+
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
+    """
 
     print('restoring cisco')
 
@@ -76,6 +106,16 @@ def restore_backup_cisco(file,ip,username,passwd,ports):
 
 def restore_backup_mikrotik(file,ip,username,passwd,ports):
 
+    """
+    Function selects one management interface [REST API, SSL API] to restore  
+    configuration in a MikroTik device.
+
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
+    """
+
     print('restoring mikrotik')
 
     if isinstance(ports['www-ssl_port'],int):
@@ -91,6 +131,17 @@ def restore_backup_mikrotik(file,ip,username,passwd,ports):
 
 
 def config_cisco(type,ip,username,passwd,config_data,ports):
+
+    """
+    Function selects one management interface [NETCONF, CLI] to make a  
+    configuration in a Cisco device.
+
+    :param type: (str) String indicates what configurations will be done
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
+    """
 
     if type == 'static':
 
@@ -124,6 +175,17 @@ def config_cisco(type,ip,username,passwd,config_data,ports):
 
 def config_mikrotik(type,ip,username,passwd,config_data,ports):
 
+    """
+    Function selects one management interface [REST API, SSL API] to make a  
+    configuration in a MikroTik device.
+
+    :param type: (str) String indicates what configurations will be done
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
+    """
+
     if type == 'static':
 
         if isinstance(ports['www-ssl_port'],int):
@@ -155,22 +217,16 @@ def config_mikrotik(type,ip,username,passwd,config_data,ports):
 
 def gathering_cisco(type,ip,username,passwd,ports):
 
-    """if type == 'inventory':
-        #First attempt with NETCONF, then It attempts with NAPALM
-        try: 
-            gatherCiscoInventoryNetconf(ip,username,passwd).inventory_dict()
-        
-        except SSHError:
-            gatherCiscoInventoryNapalm(ip,username,passwd).inventory_dict()
+    """
+    Function selects one management interface [NETCONF, CLI] to collect data from a  
+    Cisco device.
 
-
-    if type == 'capacity':
-        #First attempt with NETCONF, then It attempts with NAPALM
-        try:
-            gatherCiscoCapacityNetconf(ip,username,passwd).capacity_dict()
-        
-        except SSHError:
-            gatherCiscoCapacityNapalm(ip,username,passwd).capacity_dict()"""
+    :param type: (str) String indicates what data will be collected
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has. [22 for SSH, 830 for NETCONF]
+    """
     
     print('gathering data cisco')
 
@@ -201,23 +257,16 @@ def gathering_cisco(type,ip,username,passwd,ports):
 
 def gathering_mikrotik(type,ip,username,passwd,ports):
 
-    """if type == 'inventory':
-        #First attempt with REST API, then It attempts with API SSL
-        try:
-            gatherMikrotikInventoryRest(ip,username,passwd).inventory_dict()
-        
-        except SSLError:
+    """
+    Function selects one management interface [REST API, SSL API] to collect data from
+    a MikroTik device.
 
-            gatherMikrotikInventoryApi(ip,username,passwd).inventory_dict()
-
-    if type == 'capacity':
-        #First attempt with REST API, then It attempts with API SSL
-        try:
-            gatherMikrotikCapacityRest(ip,username,passwd).capacity_dict()
-
-        except SSLError:
-
-            gatherMikrotikCapacityApi(ip,username,passwd).capacity_dict()"""
+    :param type: (str) String indicates what data will be collected
+    :param ip: (str) IP address of the device
+    :param username: (str) username on the device with read/write privileges
+    :param passwd: (str)
+    :param ports: (list) Port numbers the device has [22 for SSH, 443 for REST API, 8729 for SSL API]
+    """
     
     print('gathering data mikrotik')
 
@@ -248,6 +297,7 @@ def gathering_mikrotik(type,ip,username,passwd,ports):
 
 def main():
 
+    #STRINGS USED ON MENU AND SUBMENUS
     TITLE = """\nNET_TOOL\n 
     Scripts for Network Automation on Cisco and MikroTik\n"""
     SUBTITLE1 = "\nTypes of reports\n"
@@ -256,7 +306,7 @@ def main():
     ITEM_BACKUP = "Make a backup from a device(s)"
     ITEM_RESTORE = "Restore a device(s) with a backup"
     ITEM_REPORT = "Create a report from a device(s)"
-    ITEM_CONFIG = "Make configuration changes on a device(s)"
+    ITEM_CONFIG = "Make new configurations on a device(s)"
 
     REPORT_TYPE_1 = "Inventory"
     REPORT_TYPE_2 = "Capacity"
@@ -285,6 +335,7 @@ def main():
     terminal_submenu1 = TerminalMenu(sub_menu1, title=SUBTITLE1)
     terminal_submenu2 = TerminalMenu(sub_menu2, title=SUBTITLE2)
 
+    #MAIN MENU
     #the letter in the square brackets too can use to index the options
     loop = True
     while loop:
@@ -338,6 +389,7 @@ def main():
                 while sub_loop3:
                     choice = file_list[terminal_submenu3.show()]
 
+                    #Selection of a backup file
                     if choice != "go back":
                         
                         pwd = os.getcwd()
@@ -353,6 +405,7 @@ def main():
                             restore_backup_mikrotik(file,ip,username,passwd,ports)
                             sub_loop3 = False
                     
+                    #Exit Restore Submenu
                     elif choice == "go back":
                         sub_loop3 = False
 
@@ -426,7 +479,7 @@ def main():
                     a = Report(devices_gathered,type)
                     a.render_pdfreport()
 
-                
+                #Exit Reporting Submenu
                 elif choice == sub_menu1[2]:
                     sub_loop1 = False
      
@@ -515,9 +568,11 @@ def main():
 
                             config_mikrotik(type,ip,username,passwd,config_data,ports)
 
+                #Exit COnfiguration Submenu
                 elif choice == sub_menu2[3]:
                     sub_loop2 = False
 
+        #EXIT MAIN MENU
         elif choice == main_menu[4]:
             loop = False
 
