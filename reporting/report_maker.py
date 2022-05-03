@@ -8,13 +8,11 @@ from weasyprint import HTML
 class Report:
 
     """
-
     The Report class is responsible for creating a report instance with access to a
     file JSON (database) managed by TinyDB library.
 
     :param ips: (list) A list with IPs of devices
     :param type: (str) Type of report. Options are: capacity, inventory
-
     """
 
     def __init__(self, ips=[list], type=str):
@@ -93,7 +91,7 @@ class Report:
 
         date = timestamp()
         filename = "report_{}_{}".format(self.type, date)
-        pathdir = create_pathdir("/reports")
+        pathdir = create_pathdir("/files/reports")
 
         template_vars = {
             # "Title" : "Report of {}".format(self.type),

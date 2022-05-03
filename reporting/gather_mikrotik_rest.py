@@ -245,13 +245,3 @@ class GatherCapacity(Gather):
 
         return values, id_db
 
-
-# device_list = ['10.0.0.2']
-# user = 'giguerra'
-# passwd = 'cisco'
-
-# a = GatherCapacity(device_list[0],user,passwd)
-# print(a.capacity_dict())
-
-# a = GatherInventory(device_list[0],user,passwd)
-# print(a.inventory_dict())

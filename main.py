@@ -1,5 +1,6 @@
 from simple_term_menu import TerminalMenu
 from utils import readfile_devices, ports_mgmt, show_backups
+
 # from backup_cisco_napalm import backupNapalm, restoreNapalm
 # from backup_cisco_netconf import backupNetconf, restoreNetconf
 # from backup_mikrotik_rest import backupRestApi, restoreRestApi
@@ -13,12 +14,22 @@ from utils import readfile_devices, ports_mgmt, show_backups
 # from gather_cisco_napalm import GatherInventory as gatherCiscoInventoryNapalm
 # from gather_cisco_napalm import GatherCapacity as gatherCiscoCapacityNapalm
 from reporting.report_maker import Report
+
 # import config_cisco_napalm
 # import config_mikrotik_api
 # import config_cisco_netconf
 # import config_mikrotik_rest
 import os
-from selector import *
+from selector import (
+    backup_cisco,
+    backup_mikrotik,
+    restore_backup_cisco,
+    restore_backup_mikrotik,
+    config_cisco,
+    config_mikrotik,
+    gathering_cisco,
+    gathering_mikrotik,
+)
 
 
 # requests.exceptions.SSLError: HTTPSConnectionPool(host='10.0.0.6', port=443): Max retries exceeded with url: /rest/system/resource (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1131)')))
@@ -26,7 +37,6 @@ from requests.exceptions import SSLError
 
 # ncclient.transport.errors.SSHError: Could not open socket to 172.16.1.2:830
 from ncclient.transport.errors import SSHError
-
 
 
 def main():
@@ -57,7 +67,11 @@ def main():
         "[q] quit",
     ]
 
-    sub_menu1 = ["[a] " + REPORT_TYPE_1, "[b] " + REPORT_TYPE_2, "[d] go back"]
+    sub_menu1 = [
+        "[a] " + REPORT_TYPE_1, 
+        "[b] " + REPORT_TYPE_2, 
+        "[d] go back",
+    ]
 
     sub_menu2 = [
         "[a] " + TYPE_CONFIG_1,
@@ -128,7 +142,7 @@ def main():
                     if choice != "go back":
 
                         pwd = os.getcwd()
-                        file = pwd + "/backup_config/" + ip + "/" + choice
+                        file = pwd + "/files/backups/" + ip + "/" + choice
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 

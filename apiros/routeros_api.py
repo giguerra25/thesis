@@ -27,7 +27,7 @@ import socket
 import ssl
 import hashlib
 import binascii
-from verbose import Log
+from .verbose import Log
 
 # Constants - Define defaults
 PORT = 8728

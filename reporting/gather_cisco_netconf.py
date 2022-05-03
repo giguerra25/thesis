@@ -1,6 +1,12 @@
 from ncclient import manager
-from utils import xmltree_tag, xmltree_countupdown, xmltree_core
-from utils import truncate, timestamp, send2db
+from utils import (
+    xmltree_tag,
+    xmltree_countupdown,
+    xmltree_core,
+    truncate,
+    timestamp,
+    send2db,
+)
 import constants as C
 
 
@@ -250,15 +256,3 @@ class GatherCapacity(Gather):
         id_db = send2db(self.ip, values, self.dir)
 
         return values, id_db
-
-
-# device_list = ['172.16.1.254','sandbox-iosxe-recomm-1.cisco.com']
-# user = 'giguerra'
-# passwd = 'cisco'
-
-# a = GatherCapacity(device_list[0],user,passwd)
-# a = GatherCapacity(device_list[1],'developer','C1sco12345')
-# print(a.capacity_dict())
-
-# a = GatherInventory(device_list[0],user,passwd)
-# print(a.inventory_dict())

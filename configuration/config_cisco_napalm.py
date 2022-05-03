@@ -105,13 +105,6 @@ class ConfigInterface(Config):
 
         configuration_data = napalm_template.render(interfaces=self.interfaces)
 
-        """output_file = "tmp/conf.txt"
-        with open(output_file, "w") as f:
-            f.write(configuration_data)
-        
-        self.request("tmp/conf.txt")
-
-        os.remove("tmp/conf.txt")"""
         print(configuration_data)
         self.request(configuration_data)
 

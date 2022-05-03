@@ -37,12 +37,12 @@ def createPathBackup(ip):
     """
     Function creates directory named after the IP of a device for saving backups.
     It returns the path of the directory created.
-    Example /.../backup_config/192.168.1.1/
+    Example /.../files/backups/192.168.1.1/
 
     :param ip: (str) IP address of the device
     """
 
-    path = create_pathdir("/backup_config/" + ip)
+    path = create_pathdir("/files/backups/" + ip)
 
     return path
 
@@ -125,14 +125,6 @@ def stripTagXml(file):
     with open(file, "w") as fout:
         fout.writelines(data[1:])
 
-
-# dir = os.getcwd()+'/backup_config/'
-# stripTagXml(dir+'R3copy.xml')
-
-
-# def moveFile(src,dst):
-
-#    shutil.move(src,dst)
 
 
 def rosApi(ip, username, password, api_commands):
@@ -349,13 +341,10 @@ def show_backups(ip):
     :param ip: (str) IP address of the device
     """
     pwd = os.getcwd()
-    dir = pwd + "/backup_config/" + ip
+    dir = pwd + "/files/backups/" + ip
     file_list = []
     for file in os.listdir(dir):
         file_list.append(file)
 
     return file_list
 
-
-# print(xpath_hostname('response.xml'))
-# Path('/home/gabrielguerra/net_tool/gagaga').chmod(mode=0o777)

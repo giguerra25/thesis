@@ -1,5 +1,4 @@
-from utils import rosApi
-from utils import truncate, timestamp, send2db
+from utils import rosApi, truncate, timestamp, send2db
 
 
 class Gather:
@@ -237,13 +236,3 @@ class GatherCapacity(Gather):
 
         return values, id_db
 
-
-# device_list = ['10.0.0.6']
-# user = 'giguerra'
-# passwd = 'cisco'
-
-# a = GatherCapacity(device_list[0],user,passwd)
-# print(a.capacity_dict())
-
-# a = GatherInventory(device_list[0],user,passwd)
-# print(a.inventory_dict())

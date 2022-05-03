@@ -20,17 +20,7 @@ def backupRestApi(ip, user, passwd):
 
     filename = createNameBackup(ip, "restapi")
 
-    # if method == 'get':
-    # resource = '/file/<filename>?.proplist=contents'
-    #    response = requests.get(url+action,auth=HTTPBasicAuth(user,passwd), verify=False)
-    #    print(json.dumps(response.json(), indent=4))
-
-    # if method == 'put':
-    #    response = requests.put(url+action,auth=HTTPBasicAuth(user,passwd), data=data,verify=False)
-
-    # if method == 'post':
-    # curl -k -u admin:cisco -X POST https://10.0.0.2/rest/export --data '{"file":"test"}' -H "content-type: application/json"
-
+    
     # Creation of a file .backup on the device with REST API call
     data = {"name": filename}
 
@@ -77,39 +67,6 @@ def backupRestApi(ip, user, passwd):
             verify=False,
         )
 
-    """# Creation of a file .rsc on the device
-    data = {"file":filename}
-    
-    response = requests.post(url+'/export',
-                        auth=HTTPBasicAuth(user,passwd),
-                        data=json.dumps(data),
-                        verify=False)"""
-
-    """#Collection of the content of the file .rsc created.
-    path = createPathBackup(ip)
-    data = {
-        "upload":"yes", 
-        "url":"sftp://172.16.1.1"+path+filename+".rsc",
-        "user":"tftp",
-        "password":"tftp",
-        "src-path":filename+".rsc",
-        }
-    
-    response = requests.post(url+'/tool/fetch',
-                        auth=HTTPBasicAuth(user,passwd),
-                        data=json.dumps(data),
-                        verify=False)"""
-
-    """#Collection of the content of the file .rsc created. This methos is LIMITED to 4KB
-    response = requests.get(url+'/file/'+filename+'.rsc'+'?.proplist=contents',
-                        auth=HTTPBasicAuth(user,passwd), 
-                        verify=False)
-    
-    payload = response.json()
-    path = createPathBackup(ip)
-
-    with open(path+filename+'.rsc', 'w') as f:
-        f.write(payload['contents'])"""
 
 
 def restoreRestApi(file, ip, user, passwd):
