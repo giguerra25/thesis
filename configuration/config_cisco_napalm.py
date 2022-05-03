@@ -105,7 +105,7 @@ class ConfigInterface(Config):
 
         configuration_data = napalm_template.render(interfaces=self.interfaces)
 
-        print(configuration_data)
+        # print(configuration_data)
         self.request(configuration_data)
 
 

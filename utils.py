@@ -201,7 +201,7 @@ def xmltree_tag(xml_string, tag):
     :param tag: (str) The tag of an XML node
     """
 
-    from reporting.constants import tags
+    from constants import tags
 
     # tree = ET.parse(xml)
     # root = tree.getroot()
@@ -226,7 +226,7 @@ def xmltree_core(xml_string):
     :param xml_string: (str) The XML object in string format
     """
 
-    from reporting.constants import tags
+    from constants import tags
 
     root = ET.fromstring(xml_string)
 
@@ -265,7 +265,7 @@ def xmltree_countupdown(xml_string):
     :param xml_string: (str) The XML object in string format
     """
 
-    from reporting.constants import tags
+    from constants import tags
 
     root = ET.fromstring(xml_string)
 

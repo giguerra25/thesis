@@ -1,24 +1,6 @@
 from simple_term_menu import TerminalMenu
 from utils import readfile_devices, ports_mgmt, show_backups
-
-# from backup_cisco_napalm import backupNapalm, restoreNapalm
-# from backup_cisco_netconf import backupNetconf, restoreNetconf
-# from backup_mikrotik_rest import backupRestApi, restoreRestApi
-# from backup_mikrotik_api import backupSSLApi, restoreSSLApi
-# from gather_mikrotik_rest import GatherInventory as gatherMikrotikInventoryRest
-# from gather_mikrotik_rest import GatherCapacity as gatherMikrotikCapacityRest
-# from gather_mikrotik_api import GatherInventory as gatherMikrotikInventoryApi
-# from gather_mikrotik_api import GatherCapacity as gatherMikrotikCapacityApi
-# from gather_cisco_netconf import GatherInventory as gatherCiscoInventoryNetconf
-# from gather_cisco_netconf import GatherCapacity as gatherCiscoCapacityNetconf
-# from gather_cisco_napalm import GatherInventory as gatherCiscoInventoryNapalm
-# from gather_cisco_napalm import GatherCapacity as gatherCiscoCapacityNapalm
 from reporting.report_maker import Report
-
-# import config_cisco_napalm
-# import config_mikrotik_api
-# import config_cisco_netconf
-# import config_mikrotik_rest
 import os
 from selector import (
     backup_cisco,

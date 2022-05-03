@@ -7,7 +7,7 @@ service timestamps log datetime msec
 no service password-encryption
 service compress-config
 !
-hostname Switchcambiado
+hostname S1
 !
 boot-start-marker
 boot-end-marker
@@ -88,14 +88,10 @@ interface GigabitEthernet0/3
  negotiation auto
 !
 interface GigabitEthernet1/0
- switchport access vlan 30
- switchport mode access
  media-type rj45
  negotiation auto
 !
 interface GigabitEthernet1/1
- switchport access vlan 30
- switchport mode access
  media-type rj45
  negotiation auto
 !
@@ -158,18 +154,6 @@ ip scp server enable
 !
 control-plane
 !
-banner exec ^C
-**************************************************************************
-* my banner is working                                                   *
-**************************************************************************^C
-banner incoming ^C
-**************************************************************************
-* my banner is working                                                   *
-**************************************************************************^C
-banner login ^C
-**************************************************************************
-* my banner is working                                                   *                                                      *
-**************************************************************************^C
 !
 line con 0
  logging synchronous

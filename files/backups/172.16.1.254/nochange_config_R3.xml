@@ -92,14 +92,6 @@
 			<GigabitEthernet>
 				<name>3</name>
 				<shutdown></shutdown>
-				<ip>
-					<address>
-						<primary>
-							<address>10.1.2.254</address>
-							<mask>255.255.255.0</mask>
-						</primary>
-					</address>
-				</ip>
 				<mop>
 					<enabled>false</enabled>
 					<sysid>false</sysid>
@@ -390,17 +382,6 @@
 						<index>0</index>
 						<enabled>false</enabled>
 					</config>
-					<ipv4 xmlns="http://openconfig.net/yang/interfaces/ip">
-						<addresses>
-							<address>
-								<ip>10.1.2.254</ip>
-								<config>
-									<ip>10.1.2.254</ip>
-									<prefix-length>24</prefix-length>
-								</config>
-							</address>
-						</addresses>
-					</ipv4>
 					<ipv6 xmlns="http://openconfig.net/yang/interfaces/ip">
 						<config>
 							<enabled>false</enabled>
@@ -538,12 +519,7 @@
 			<name>GigabitEthernet3</name>
 			<type xmlns:ianaift="urn:ietf:params:xml:ns:yang:iana-if-type">ianaift:ethernetCsmacd</type>
 			<enabled>false</enabled>
-			<ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip">
-				<address>
-					<ip>10.1.2.254</ip>
-					<netmask>255.255.255.0</netmask>
-				</address>
-			</ipv4>
+			<ipv4 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip"></ipv4>
 			<ipv6 xmlns="urn:ietf:params:xml:ns:yang:ietf-ip"></ipv6>
 		</interface>
 		<interface>
