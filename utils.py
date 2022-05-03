@@ -1,9 +1,7 @@
 import datetime, os
 from pathlib import Path
-
-# from tracemalloc import Snapshot
 import xmltodict
-import routeros_api
+from apiros.routeros_api import Api as api_ros
 import ssl
 import math
 import xml.etree.cElementTree as ET
@@ -157,7 +155,7 @@ def rosApi(ip, username, password, api_commands):
 
     # IF device uses API-SSL with certificate
     try:
-        router = routeros_api.Api(
+        router = api_ros(
             ip, user=username, password=password, use_ssl=True
         )
     # If device uses API-SSL without a certificate
@@ -169,7 +167,7 @@ def rosApi(ip, username, password, api_commands):
         context.check_hostname = False
         context.set_ciphers("ADH:@SECLEVEL=0")
 
-        router = routeros_api.Api(
+        router = api_ros(
             ip, user=username, password=password, use_ssl=True, context=context
         )
 
@@ -211,7 +209,7 @@ def xmltree_tag(xml_string, tag):
     :param tag: (str) The tag of an XML node
     """
 
-    from constants import tags
+    from reporting.constants import tags
 
     # tree = ET.parse(xml)
     # root = tree.getroot()
@@ -236,7 +234,7 @@ def xmltree_core(xml_string):
     :param xml_string: (str) The XML object in string format
     """
 
-    from constants import tags
+    from reporting.constants import tags
 
     root = ET.fromstring(xml_string)
 
@@ -275,7 +273,7 @@ def xmltree_countupdown(xml_string):
     :param xml_string: (str) The XML object in string format
     """
 
-    from constants import tags
+    from reporting.constants import tags
 
     root = ET.fromstring(xml_string)
 

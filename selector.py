@@ -1,22 +1,19 @@
-# from utils import readfile_devices, ports_mgmt, show_backups
-from backup_cisco_napalm import backupNapalm, restoreNapalm
-from backup_cisco_netconf import backupNetconf, restoreNetconf
-from backup_mikrotik_rest import backupRestApi, restoreRestApi
-from backup_mikrotik_api import backupSSLApi, restoreSSLApi
-from gather_mikrotik_rest import GatherInventory as gatherMikrotikInventoryRest
-from gather_mikrotik_rest import GatherCapacity as gatherMikrotikCapacityRest
-from gather_mikrotik_api import GatherInventory as gatherMikrotikInventoryApi
-from gather_mikrotik_api import GatherCapacity as gatherMikrotikCapacityApi
-from gather_cisco_netconf import GatherInventory as gatherCiscoInventoryNetconf
-from gather_cisco_netconf import GatherCapacity as gatherCiscoCapacityNetconf
-from gather_cisco_napalm import GatherInventory as gatherCiscoInventoryNapalm
-from gather_cisco_napalm import GatherCapacity as gatherCiscoCapacityNapalm
-# from report_maker import Report
-import config_cisco_napalm
-import config_mikrotik_api
-import config_cisco_netconf
-import config_mikrotik_rest
-# import os
+from backup_restore.backup_cisco_napalm import backupNapalm, restoreNapalm
+from backup_restore.backup_cisco_netconf import backupNetconf, restoreNetconf
+from backup_restore.backup_mikrotik_rest import backupRestApi, restoreRestApi
+from backup_restore.backup_mikrotik_api import backupSSLApi, restoreSSLApi
+from reporting.gather_mikrotik_rest import GatherInventory as gatherMikrotikInventoryRest
+from reporting.gather_mikrotik_rest import GatherCapacity as gatherMikrotikCapacityRest
+from reporting.gather_mikrotik_api import GatherInventory as gatherMikrotikInventoryApi
+from reporting.gather_mikrotik_api import GatherCapacity as gatherMikrotikCapacityApi
+from reporting.gather_cisco_netconf import GatherInventory as gatherCiscoInventoryNetconf
+from reporting.gather_cisco_netconf import GatherCapacity as gatherCiscoCapacityNetconf
+from reporting.gather_cisco_napalm import GatherInventory as gatherCiscoInventoryNapalm
+from reporting.gather_cisco_napalm import GatherCapacity as gatherCiscoCapacityNapalm
+import configuration.config_cisco_napalm
+import configuration.config_mikrotik_api
+import configuration.config_cisco_netconf
+import configuration.config_mikrotik_rest
 
 
 
@@ -138,12 +135,12 @@ def config_cisco(type, ip, username, passwd, config_data, ports):
     if type == "static":
 
         if isinstance(ports["netconf_port"], int):
-            config_cisco_netconf.ConfigStaticRoute(
+            configuration.config_cisco_netconf.ConfigStaticRoute(
                 ip, username, passwd, config_data
             )
             return
         if isinstance(ports["ssh_port"], int):
-            config_cisco_napalm.ConfigStaticRoute(
+            configuration.config_cisco_napalm.ConfigStaticRoute(
                 ip, username, passwd, config_data
             )
             return
@@ -151,12 +148,12 @@ def config_cisco(type, ip, username, passwd, config_data, ports):
     if type == "interface":
 
         if isinstance(ports["netconf_port"], int):
-            config_cisco_netconf.ConfigInterface(
+            configuration.config_cisco_netconf.ConfigInterface(
                 ip, username, passwd, config_data
             )
             return
         if isinstance(ports["ssh_port"], int):
-            config_cisco_napalm.ConfigInterface(
+            configuration.config_cisco_napalm.ConfigInterface(
                 ip, username, passwd, config_data
             )
             return
@@ -164,10 +161,10 @@ def config_cisco(type, ip, username, passwd, config_data, ports):
     if type == "vlans":
 
         if isinstance(ports["ssh_port"], int):
-            config_cisco_napalm.ConfigVlan(ip, username, passwd, config_data)
+            configuration.config_cisco_napalm.ConfigVlan(ip, username, passwd, config_data)
             return
         if isinstance(ports["netconf_port"], int):
-            config_cisco_netconf.ConfigVlan(ip, username, passwd, config_data)
+            configuration.config_cisco_netconf.ConfigVlan(ip, username, passwd, config_data)
             return
 
 
@@ -187,12 +184,12 @@ def config_mikrotik(type, ip, username, passwd, config_data, ports):
     if type == "static":
 
         if isinstance(ports["www-ssl_port"], int):
-            config_mikrotik_rest.ConfigStaticRoute(
+            configuration.config_mikrotik_rest.ConfigStaticRoute(
                 ip, username, passwd, config_data
             )
             return
         if isinstance(ports["api-ssl_port"], int):
-            config_mikrotik_api.ConfigStaticRoute(
+            configuration.config_mikrotik_api.ConfigStaticRoute(
                 ip, username, passwd, config_data
             )
             return
@@ -200,12 +197,12 @@ def config_mikrotik(type, ip, username, passwd, config_data, ports):
     if type == "interface":
 
         if isinstance(ports["www-ssl_port"], int):
-            config_mikrotik_rest.ConfigInterface(
+            configuration.config_mikrotik_rest.ConfigInterface(
                 ip, username, passwd, config_data
             )
             return
         if isinstance(ports["api-ssl_port"], int):
-            config_mikrotik_api.ConfigInterface(
+            configuration.config_mikrotik_api.ConfigInterface(
                 ip, username, passwd, config_data
             )
             return
@@ -213,10 +210,10 @@ def config_mikrotik(type, ip, username, passwd, config_data, ports):
     if type == "vlans":
 
         if isinstance(ports["www-ssl_port"], int):
-            config_mikrotik_rest.ConfigVlan(ip, username, passwd, config_data)
+            configuration.config_mikrotik_rest.ConfigVlan(ip, username, passwd, config_data)
             return
         if isinstance(ports["api-ssl_port"], int):
-            config_mikrotik_api.ConfigVlan(ip, username, passwd, config_data)
+            configuration.config_mikrotik_api.ConfigVlan(ip, username, passwd, config_data)
             return
 
 

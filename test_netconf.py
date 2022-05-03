@@ -1,6 +1,6 @@
 from ncclient import manager
 import xmltodict
-import constants
+import reporting.constants
 
 device_list = ['172.16.1.2','172.16.1.254','10.0.0.2']
 user = 'giguerra'
