@@ -1,23 +1,27 @@
 from simple_term_menu import TerminalMenu
 from utils import readfile_devices, ports_mgmt, show_backups
-from backup_cisco_napalm import backupNapalm, restoreNapalm
-from backup_cisco_netconf import backupNetconf, restoreNetconf
-from backup_mikrotik_rest import backupRestApi, restoreRestApi
-from backup_mikrotik_api import backupSSLApi, restoreSSLApi
-from gather_mikrotik_rest import GatherInventory as gatherMikrotikInventoryRest
-from gather_mikrotik_rest import GatherCapacity as gatherMikrotikCapacityRest
-from gather_mikrotik_api import GatherInventory as gatherMikrotikInventoryApi
-from gather_mikrotik_api import GatherCapacity as gatherMikrotikCapacityApi
-from gather_cisco_netconf import GatherInventory as gatherCiscoInventoryNetconf
-from gather_cisco_netconf import GatherCapacity as gatherCiscoCapacityNetconf
-from gather_cisco_napalm import GatherInventory as gatherCiscoInventoryNapalm
-from gather_cisco_napalm import GatherCapacity as gatherCiscoCapacityNapalm
+# from backup_cisco_napalm import backupNapalm, restoreNapalm
+# from backup_cisco_netconf import backupNetconf, restoreNetconf
+# from backup_mikrotik_rest import backupRestApi, restoreRestApi
+# from backup_mikrotik_api import backupSSLApi, restoreSSLApi
+# from gather_mikrotik_rest import GatherInventory as gatherMikrotikInventoryRest
+# from gather_mikrotik_rest import GatherCapacity as gatherMikrotikCapacityRest
+# from gather_mikrotik_api import GatherInventory as gatherMikrotikInventoryApi
+# from gather_mikrotik_api import GatherCapacity as gatherMikrotikCapacityApi
+# from gather_cisco_netconf import GatherInventory as gatherCiscoInventoryNetconf
+# from gather_cisco_netconf import GatherCapacity as gatherCiscoCapacityNetconf
+# from gather_cisco_napalm import GatherInventory as gatherCiscoInventoryNapalm
+# from gather_cisco_napalm import GatherCapacity as gatherCiscoCapacityNapalm
 from report_maker import Report
-import config_cisco_napalm
-import config_mikrotik_api
-import config_cisco_netconf
-import config_mikrotik_rest
+# import config_cisco_napalm
+# import config_mikrotik_api
+# import config_cisco_netconf
+# import config_mikrotik_rest
 import os
+from selector import *
+
+
+
 
 # requests.exceptions.SSLError: HTTPSConnectionPool(host='10.0.0.6', port=443): Max retries exceeded with url: /rest/system/resource (Caused by SSLError(SSLError(1, '[SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1131)')))
 from requests.exceptions import SSLError
@@ -25,7 +29,7 @@ from requests.exceptions import SSLError
 # ncclient.transport.errors.SSHError: Could not open socket to 172.16.1.2:830
 from ncclient.transport.errors import SSHError
 
-
+'''
 def backup_cisco(ip, username, passwd, ports):
 
     """
@@ -303,7 +307,7 @@ def gathering_mikrotik(type, ip, username, passwd, ports):
         if isinstance(ports["api-ssl_port"], int):
 
             gatherMikrotikCapacityApi(ip, username, passwd).capacity_dict()
-            return
+            return'''
 
 
 def main():
@@ -334,11 +338,7 @@ def main():
         "[q] quit",
     ]
 
-    sub_menu1 = [
-        "[a] " + REPORT_TYPE_1, 
-        "[b] " + REPORT_TYPE_2, 
-        "[d] go back"
-    ]
+    sub_menu1 = ["[a] " + REPORT_TYPE_1, "[b] " + REPORT_TYPE_2, "[d] go back"]
 
     sub_menu2 = [
         "[a] " + TYPE_CONFIG_1,
