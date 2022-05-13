@@ -2,7 +2,7 @@ from ncclient import manager
 from jinja2 import Template
 
 
-class Config:
+class ConfigNetconf:
 
     """
     This is the base class we have to inherit from when writing configuration
@@ -40,7 +40,7 @@ class Config:
 
             # print(m.connected)
             # print(payload)
-            response = m.edit_config(payload, target="running")
+            response = m.edit_config(payload, target="running", default_operation="replace")
 
         # response = xmltodict.parse(netconf_response.xml)["rpc-reply"]["data"]
 
@@ -49,7 +49,7 @@ class Config:
         return response
 
 
-class ConfigInterface(Config):
+class ConfigInterface(ConfigNetconf):
 
     """
     This class creates an instance that configures interfaces of a Cisco device
@@ -121,7 +121,7 @@ class ConfigInterface(Config):
         # return response
 
 
-class ConfigStaticRoute(Config):
+class ConfigStaticRoute(ConfigNetconf):
 
     """
     This class creates an instance that configures static routes on a Cisco device

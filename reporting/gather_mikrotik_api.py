@@ -1,7 +1,7 @@
 from utils import rosApi, truncate, timestamp, send2db
 
 
-class Gather:
+class GatherApi:
 
     """
     This is the base class we have to inherit from when writing data gathering
@@ -33,7 +33,7 @@ class Gather:
         return response, date
 
 
-class GatherInventory(Gather):
+class GatherInventory(GatherApi):
 
     """
     This class creates an instance that collects general data about a MikroTik device
@@ -44,7 +44,7 @@ class GatherInventory(Gather):
     """
 
     def __init__(self, ip, user, passwd):
-        Gather.__init__(self, ip, user, passwd)
+        GatherApi.__init__(self, ip, user, passwd)
         self.response, self.date = self.request("/system/resource/print")
         self.dir = "/db/inventory_report"
         # print(self.response)
@@ -121,7 +121,7 @@ class GatherInventory(Gather):
         return values, id_db
 
 
-class GatherCapacity(Gather):
+class GatherCapacity(GatherApi):
 
     """
     This class creates an instance that collects general data about physical and
@@ -133,7 +133,7 @@ class GatherCapacity(Gather):
     """
 
     def __init__(self, ip, user, passwd):
-        Gather.__init__(self, ip, user, passwd)
+        GatherApi.__init__(self, ip, user, passwd)
         self.response, self.date = self.request("/system/resource/print")
         self.dir = "/db/capacity_report"
 

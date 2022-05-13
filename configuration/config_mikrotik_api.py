@@ -2,7 +2,7 @@ from utils import rosApi
 from jinja2 import Template
 
 
-class Config:
+class ConfigApi:
 
     """
     This is the base class we have to inherit from when writing configuration
@@ -34,7 +34,7 @@ class Config:
         return response
 
 
-class ConfigInterface(Config):
+class ConfigInterface(ConfigApi):
 
     """
     This class creates an instance that configures interfaces of a MikroTik device
@@ -107,7 +107,7 @@ class ConfigInterface(Config):
         self.request(apissl_payload)
 
 
-class ConfigStaticRoute(Config):
+class ConfigStaticRoute(ConfigApi):
 
     """
     This class creates an instance that configures static routes on a MikroTik device
@@ -174,7 +174,7 @@ class ConfigStaticRoute(Config):
         self.request(apissl_payload)
 
 
-class ConfigVlan(Config):
+class ConfigVlan(ConfigApi):
 
     """
     This class creates an instance that configures VLANs on a MikroTik device
@@ -279,7 +279,7 @@ interfaces = [
     },
 ]
 
-# a = Config(device_list[0],user,passwd)
+# a = ConfigApi(device_list[0],user,passwd)
 # a.request(command)
 # a = ConfigInterface(device_list[0],user,passwd,interfaces)
 # a.config_if()

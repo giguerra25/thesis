@@ -3,7 +3,7 @@ from requests.auth import HTTPBasicAuth
 import json
 
 
-class Config:
+class ConfigRestApi:
 
     """
     This is the base class we have to inherit from when writing configuration
@@ -85,7 +85,7 @@ class Config:
         return response
 
 
-class ConfigInterface(Config):
+class ConfigInterface(ConfigRestApi):
 
     """
     This class creates an instance that configures interfaces of a MikroTik device
@@ -150,7 +150,7 @@ class ConfigInterface(Config):
             print(response)
 
 
-class ConfigStaticRoute(Config):
+class ConfigStaticRoute(ConfigRestApi):
 
     """
     This class creates an instance that configures static routes on a MikroTik device
@@ -209,7 +209,7 @@ class ConfigStaticRoute(Config):
             print(response)
 
 
-class ConfigVlan(Config):
+class ConfigVlan(ConfigRestApi):
 
     """
     This class creates an instance that configures VLANs on a MikroTik device

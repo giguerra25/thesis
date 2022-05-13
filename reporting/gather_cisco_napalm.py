@@ -3,7 +3,7 @@ from napalm.base.exceptions import ConnectionException
 from utils import truncate, timestamp, send2db
 
 
-class Gather:
+class GatherNapalm:
 
     """
     This is the base class we have to inherit from when writing data gathering
@@ -59,7 +59,7 @@ class Gather:
         return response, date
 
 
-class GatherInventory(Gather):
+class GatherInventory(GatherNapalm):
 
     """
     This class creates an instance that collects general data about a Cisco device
@@ -70,7 +70,7 @@ class GatherInventory(Gather):
     """
 
     def __init__(self, ip, user, passwd):
-        Gather.__init__(self, ip, user, passwd)
+        GatherNapalm.__init__(self, ip, user, passwd)
         self.response, self.date = self.request("device.get_facts()")
         self.dir = "/db/inventory_report"
 
@@ -141,7 +141,7 @@ class GatherInventory(Gather):
         return values, id_db
 
 
-class GatherCapacity(Gather):
+class GatherCapacity(GatherNapalm):
 
     """
     This class creates an instance that collects general data about physical and
@@ -153,7 +153,7 @@ class GatherCapacity(Gather):
     """
 
     def __init__(self, ip, user, passwd):
-        Gather.__init__(self, ip, user, passwd)
+        GatherNapalm.__init__(self, ip, user, passwd)
         self.response, self.date = self.request("device.get_environment()")
         # print(self.response)
         self.dir = "/db/capacity_report"

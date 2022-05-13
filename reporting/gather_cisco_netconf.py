@@ -10,7 +10,7 @@ from utils import (
 import constants as C
 
 
-class Gather:
+class GatherNetconf:
 
     """
     This is the base class we have to inherit from when writing data gathering
@@ -55,7 +55,7 @@ class Gather:
         return response, date
 
 
-class GatherInventory(Gather):
+class GatherInventory(GatherNetconf):
 
     """
     This class creates an instance that collects general data about a Cisco device
@@ -66,7 +66,7 @@ class GatherInventory(Gather):
     """
 
     def __init__(self, ip, user, passwd):
-        Gather.__init__(self, ip, user, passwd)
+        GatherNetconf.__init__(self, ip, user, passwd)
         self.dir = "/db/inventory_report"
 
     def hostname(self):
@@ -152,7 +152,7 @@ class GatherInventory(Gather):
         return values, id_db
 
 
-class GatherCapacity(Gather):
+class GatherCapacity(GatherNetconf):
 
     """
     This class creates an instance that collects general data about physical and
@@ -164,7 +164,7 @@ class GatherCapacity(Gather):
     """
 
     def __init__(self, ip, user, passwd):
-        Gather.__init__(self, ip, user, passwd)
+        GatherNetconf.__init__(self, ip, user, passwd)
         self.dir = "/db/capacity_report"
 
     def memory_used(self):

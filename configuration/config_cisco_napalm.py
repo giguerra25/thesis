@@ -4,7 +4,7 @@ from jinja2 import Template
 from utils import netmikoconfig
 
 
-class Config:
+class ConfigNapalm:
 
     """
     This is the base class we have to inherit from when writing configuration
@@ -64,8 +64,7 @@ class Config:
         # date = self.timestamp()
         # return response,date
 
-
-class ConfigInterface(Config):
+class ConfigInterface(ConfigNapalm):
 
     """
     This class creates an instance that configures interfaces of a Cisco device
@@ -109,7 +108,7 @@ class ConfigInterface(Config):
         self.request(configuration_data)
 
 
-class ConfigStaticRoute(Config):
+class ConfigStaticRoute(ConfigNapalm):
 
     """
     This class creates an instance that configures static routes on a Cisco device
@@ -189,7 +188,7 @@ class ConfigStaticRoute(Config):
         self.request(configuration_data)
 
 
-class ConfigVlan(Config):
+class ConfigVlan(ConfigNapalm):
 
     """
     This class creates an instance that configures VLANs on a switch Cisco
