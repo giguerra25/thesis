@@ -348,3 +348,31 @@ def show_backups(ip):
 
     return file_list
 
+
+def colored_print(color,string):
+    """
+    
+    Function add colors to the printed text.
+
+    Args:
+    :param color: (str) Color. Options are RED, GREEN
+    :param string (str) Text to be colored
+    """
+    COLORS = {
+        "RED" : "\033[1;31;40m",
+        "GREEN" : "\033[1;32;40m",
+        "HEADER" : '\033[95m',
+        "OKBLUE" : '\033[94m',
+        "OKCYAN" : '\033[96m',
+        "OKGREEN" : '\033[92m',
+        "WARNING" : '\033[93m',
+        "FAIL" : '\033[91m',
+        "ENDC" : '\033[0m',
+        "BOLD" : '\033[1m',
+        "UNDERLINE" : '\033[4m',
+    }
+    
+    try:
+        print(COLORS[color] + string + COLORS["ENDC"] ) if color in COLORS.keys() else print(string)
+    except KeyError:
+        print(string)
