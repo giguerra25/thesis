@@ -1,5 +1,5 @@
 from simple_term_menu import TerminalMenu
-from utils import readfile_devices, ports_mgmt, show_backups
+from utils import readfile_devices, ports_mgmt, show_backups, colored_print
 from reporting.report_maker import Report
 import os
 from selector import (
@@ -86,27 +86,27 @@ def main():
                 vendor = device["vendor"]
                 ports = ports_mgmt(device)
                 
-                print("device: {}".format(ip))
+                print("\ndevice: {}".format(ip))
 
                 if vendor in ("Cisco", "CISCO", "cisco"):
 
                     try: 
                         backup_cisco(ip, username, passwd, ports)
                     except Exception as e:
-                        print("KO")
-                        print(f"{e}")
+                        colored_print("FAIL","\tKO")
+                        print(f"\t{e}")
                     else:
-                        print("OK")
+                        colored_print("OKGREEN","\tOK")
 
                 elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
                     
                     try: 
                         backup_mikrotik(ip, username, passwd, ports)
                     except Exception as e:
-                        print("KO")
-                        print(f"{e}")
+                        colored_print("FAIL","\tKO")
+                        print(f"\t{e}")
                     else:
-                        print("OK")
+                        colored_print("OKGREEN","\tOK")
 
             # loop = False
 
@@ -136,7 +136,8 @@ def main():
 
                     # Selection of a backup file
                     if choice != "go back":
-
+                        print("\ndevice: {}".format(ip))
+                        print("\tbackup file: {}".format(choice))
                         pwd = os.getcwd()
                         file = pwd + "/files/backups/" + ip + "/" + choice
 
@@ -147,10 +148,10 @@ def main():
                                     file, ip, username, passwd, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print(f"\t{e}")
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
                             sub_loop3 = False
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
@@ -160,10 +161,10 @@ def main():
                                     file, ip, username, passwd, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print(f"\t{e}")
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
                             sub_loop3 = False
 
                     # Exit Restore Submenu
@@ -181,7 +182,7 @@ def main():
                 if choice == sub_menu1[0]:
                     print(choice)
 
-                    type = "inventory"
+                    type_rep = "inventory"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
@@ -194,39 +195,39 @@ def main():
                         vendor = device["vendor"]
                         ports = ports_mgmt(device)
                         
-                        print("device: {}".format(ip))
+                        print("\ndevice: {}".format(ip))
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
                             
                             try:
-                                gathering_cisco(type, ip, username, passwd, ports)
+                                gathering_cisco(type_rep, ip, username, passwd, ports)
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print(f"\t{e}")
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
                             try:
-                                gathering_mikrotik(type, ip, username, passwd, ports)
+                                gathering_mikrotik(type_rep, ip, username, passwd, ports)
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print(f"\t{e}")
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
 
                         devices_gathered.append(ip)
 
                     # Report is generated with a list of devices
-                    a = Report(devices_gathered, type)
+                    a = Report(devices_gathered, type_rep)
                     a.render_pdfreport()
 
                 # Capacity report
                 elif choice == sub_menu1[1]:
                     print(choice)
 
-                    type = "capacity"
+                    type_rep = "capacity"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
@@ -239,32 +240,32 @@ def main():
                         vendor = device["vendor"]
                         ports = ports_mgmt(device)
                         
-                        print("device: {}".format(ip))
+                        print("\ndevice: {}".format(ip))
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
                             try:
-                                gathering_cisco(type, ip, username, passwd, ports)
+                                gathering_cisco(type_rep, ip, username, passwd, ports)
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print(f"\t{e}")
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
                             try:
-                                gathering_mikrotik(type, ip, username, passwd, ports)
+                                gathering_mikrotik(type_rep, ip, username, passwd, ports)
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print(f"\t{e}")
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
 
                         devices_gathered.append(ip)
 
                     # Report is generated with a list of devices
-                    a = Report(devices_gathered, type)
+                    a = Report(devices_gathered, type_rep)
                     a.render_pdfreport()
 
                 # Exit Reporting Submenu
@@ -282,133 +283,167 @@ def main():
                 if choice == sub_menu2[0]:
                     print(choice)
 
-                    type = "static"
+                    type_conf = "static"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
-
-                        ip = device["mgmt_ip"]
-                        username = device["username"]
-                        passwd = device["password"]
-                        vendor = device["vendor"]
-                        config_data = device["routes"]
-                        ports = ports_mgmt(device)
                         
-                        print("device: {}".format(ip))
+                        try:
+                            ip = device["mgmt_ip"]
+                            username = device["username"]
+                            passwd = device["password"]
+                            vendor = device["vendor"]
+                            config_data = device["routes"]
+                            ports = ports_mgmt(device)
+                            
+                        except Exception as ex:
+                            print("\ndevice: {}".format(ip))
+                            colored_print("FAIL","\tKO")
+                            print("\tException: {}".format(type(ex).__name__))
+                            print("\tException message: {}".format(ex))
+                            continue
+                        
+                        print("\ndevice: {}".format(ip))
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
                             try:
                                 config_cisco(
-                                    type, ip, username, passwd, config_data, ports
+                                    type_conf, ip, username, passwd, config_data, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print("\tException: {}".format(type(e).__name__))
+                                print("\tException message: {}".format(e))
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
                             
                             try:
                                 config_mikrotik(
-                                    type, ip, username, passwd, config_data, ports
+                                    type_conf, ip, username, passwd, config_data, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print("\tException: {}".format(type(e).__name__))
+                                print("\tException message: {}".format(e))
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
+                            
 
                 # Configure interfaces
                 elif choice == sub_menu2[1]:
                     print(choice)
 
-                    type = "interface"
+                    type_conf = "interface"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
 
-                        ip = device["mgmt_ip"]
-                        username = device["username"]
-                        passwd = device["password"]
-                        vendor = device["vendor"]
-                        config_data = device["interfaces"]
-                        ports = ports_mgmt(device)
+                        try:
+                            ip = device["mgmt_ip"]
+                            username = device["username"]
+                            passwd = device["password"]
+                            vendor = device["vendor"]
+                            config_data = device["interfaces"]
+                            ports = ports_mgmt(device)
                         
-                        print("device: {}".format(ip))
+                        except Exception as ex:
+                            print("\ndevice: {}".format(ip))
+                            colored_print("FAIL","\tKO")
+                            print("\tException: {}".format(type(ex).__name__))
+                            print("\tException message: {}".format(ex))
+                            continue
+                        
+                        print("\ndevice: {}".format(ip))
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
                             try:
                                 config_cisco(
-                                    type, ip, username, passwd, config_data, ports
+                                    type_conf, ip, username, passwd, config_data, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print("\tException: {}".format(type(e).__name__))
+                                print("\tException message: {}".format(e))
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
-
+    
                             try:
                                 config_mikrotik(
-                                    type, ip, username, passwd, config_data, ports
+                                    type_conf, ip, username, passwd, config_data, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print("\tException: {}".format(type(e).__name__))
+                                print("\tException message: {}".format(e))
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
+                            
 
                 # Configure VLANs
                 elif choice == sub_menu2[2]:
                     print(choice)
 
-                    type = "vlans"
+                    type_conf = "vlans"
                     devices_gathered = []
 
                     list_devices = readfile_devices()
 
                     for device in list_devices:
 
-                        ip = device["mgmt_ip"]
-                        username = device["username"]
-                        passwd = device["password"]
-                        vendor = device["vendor"]
-                        config_data = device["vlans"]
-                        ports = ports_mgmt(device)
+                        try:
+                            ip = device["mgmt_ip"]
+                            username = device["username"]
+                            passwd = device["password"]
+                            vendor = device["vendor"]
+                            config_data = device["vlans"]
+                            ports = ports_mgmt(device)
                         
-                        print("device: {}".format(ip))
+                        except Exception as ex:
+                            print("\ndevice: {}".format(ip))
+                            colored_print("FAIL","\tKO")
+                            print("\tException: {}".format(type(ex).__name__))
+                            print("\tException message: {}".format(ex))
+                            continue
+                        
+                        print("\ndevice: {}".format(ip))
 
                         if vendor in ("Cisco", "CISCO", "cisco"):
 
                             try:
                                 config_cisco(
-                                    type, ip, username, passwd, config_data, ports
+                                    type_conf, ip, username, passwd, config_data, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print("\tException: {}".format(type(e).__name__))
+                                print("\tException message: {}".format(e))
+                                
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
 
                         elif vendor in ("Mikrotik", "MIKROTIK", "mikrotik"):
 
                             try:
                                 config_mikrotik(
-                                    type, ip, username, passwd, config_data, ports
+                                    type_conf, ip, username, passwd, config_data, ports
                                 )
                             except Exception as e:
-                                print("KO")
-                                print(f"{e}")
+                                colored_print("FAIL","\tKO")
+                                print("\tException: {}".format(type(e).__name__))
+                                print("\tException message: {}".format(e))
                             else:
-                                print("OK")
+                                colored_print("OKGREEN","\tOK")
+                        
 
                 # Exit COnfiguration Submenu
                 elif choice == sub_menu2[3]:
