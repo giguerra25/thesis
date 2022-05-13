@@ -40,7 +40,7 @@ class ConfigNetconf:
 
             # print(m.connected)
             # print(payload)
-            response = m.edit_config(payload, target="running", default_operation="replace")
+            response = m.edit_config(payload, target="running")
 
         # response = xmltodict.parse(netconf_response.xml)["rpc-reply"]["data"]
 

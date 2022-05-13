@@ -68,5 +68,5 @@ def restoreNetconf(file, ip, user, passwd):
         hostkey_verify=False,
     ) as m:
 
-        print(m.connected)
-        m.edit_config(payload, target="running", default_operation="replace")
+        #print(m.connected)
+        m.edit_config(payload, target="running")
