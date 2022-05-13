@@ -51,7 +51,7 @@ def createNameBackup(ip, method):
 
     """
     Function creates a filename composed of ip, timestamp, and management interface used.
-    Example: 192.168.1.1_2022-04-27_20:44:31napalm
+    Example: 10.0.0.2_03-05-22_13:26_restapi
 
     :param ip: (str) IP address of the device
     :param method: (str) MGMT interface used. Options [napalm, netconf, apissl, restapi]
@@ -336,7 +336,7 @@ def show_backups(ip):
 
     """
     FUnction return a list with the backup files for the respective
-    device identified with its IP under dir /backup_config
+    device identified with its IP under dir /files/backups
 
     :param ip: (str) IP address of the device
     """
