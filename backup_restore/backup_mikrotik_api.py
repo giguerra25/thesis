@@ -88,10 +88,10 @@ def restoreSSLApi(file, ip, user, passwd):
     )
 
     response = rosApi(ip, user, passwd, api_command)
-    print(response)
+    #print(response)
     # [{'status': 'connecting', '.section': '0'}, {'status': 'connecting', '.section': '1'}, {'status': 'finished', 'downloaded': '14', 'total': '14', 'duration': '1s', '.section': '2'}]
 
     # API request to execute file .backup on device
     api_command = ("/system/backup/load", "=name=" + filename)
     response = rosApi(ip, user, passwd, api_command)
-    print(response)
+    #print(response) # prints [] if is OK

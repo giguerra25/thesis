@@ -85,11 +85,6 @@ def restoreRestApi(file, ip, user, passwd):
 
     path = os.path.dirname(file)  # CHECK IF THIS IS NEEDED
     filename = os.path.basename(file)
-    # new_filename = filename.replace('.rsc','.auto.rsc')
-    # new_file = path+'/'+new_filename
-
-    # Creating file with ext ".auto.rsc"
-    # shutil.copy(file, new_file)
 
     # POST request to get file .backup to device via SFTP
     data = {
@@ -106,7 +101,7 @@ def restoreRestApi(file, ip, user, passwd):
         verify=False,
     )
 
-    print(json.dumps(response.json(), indent=4))
+    # print(json.dumps(response.json(), indent=4))  # prints progress upload file to device
 
     # POST request to execute file .backup on device
     data = {
@@ -120,4 +115,4 @@ def restoreRestApi(file, ip, user, passwd):
         verify=False,
     )
 
-    print(json.dumps(response.json(), indent=4))
+    #print(json.dumps(response.json(), indent=4)) # prints empty []
