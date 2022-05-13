@@ -69,4 +69,4 @@ def restoreNetconf(file, ip, user, passwd):
     ) as m:
 
         print(m.connected)
-        m.edit_config(payload, target="running")
+        m.edit_config(payload, target="running", default_operation="replace")
