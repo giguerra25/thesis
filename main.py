@@ -20,6 +20,10 @@ from requests.exceptions import SSLError
 # ncclient.transport.errors.SSHError: Could not open socket to 172.16.1.2:830
 from ncclient.transport.errors import SSHError
 
+# disables Unverified HTTPS warning
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
 
 def main():
 
@@ -147,9 +151,10 @@ def main():
                                 restore_backup_cisco(
                                     file, ip, username, passwd, ports
                                 )
-                            except Exception as e:
+                            except Exception as ex:
                                 colored_print("FAIL","\tKO")
-                                print(f"\t{e}")
+                                print("\tException: {}".format(type(ex).__name__))
+                                print("\tException message: {}".format(ex))
                             else:
                                 colored_print("OKGREEN","\tOK")
                             sub_loop3 = False
