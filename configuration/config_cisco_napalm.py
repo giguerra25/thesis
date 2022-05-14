@@ -57,7 +57,7 @@ class ConfigNapalm:
 
         # device.load_merge_candidate(filename=napalm_config)
         device.load_merge_candidate(config=napalm_config)
-        print(device.compare_config())
+        # print(device.compare_config())
         device.commit_config()
         device.close()
 

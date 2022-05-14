@@ -147,7 +147,7 @@ class ConfigInterface(ConfigRestApi):
         for intf in self.interfaces:
 
             response = self.request_put(resource, intf)
-            print(response)
+            #print(response)
 
 
 class ConfigStaticRoute(ConfigRestApi):
@@ -206,7 +206,7 @@ class ConfigStaticRoute(ConfigRestApi):
 
         for route in self.list_routes:
             response = self.request_put(resource, route)
-            print(response)
+            #print(response) # search 'error': 400
 
 
 class ConfigVlan(ConfigRestApi):
