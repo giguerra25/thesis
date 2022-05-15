@@ -24,7 +24,7 @@ def backupNetconf(ip, user, passwd):
         hostkey_verify=False,
     ) as m:
 
-        print(m.connected)
+        #print(m.connected)
         config = m.get_config("running")
 
     path = createPathBackup(ip)

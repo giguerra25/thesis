@@ -31,7 +31,7 @@ def backupSSLApi(ip, user, passwd):
     )
 
     response = rosApi(ip, user, passwd, api_command)
-    print(response)
+    #print(response)
 
     # Checking Finished status in API response
     status = 0
@@ -57,10 +57,10 @@ def backupSSLApi(ip, user, passwd):
             ):
                 id_file = element[".id"]
 
-        print("deleting backup on device")
+        #print("deleting backup on device")
         api_command = ("/file/remove", "=.id=" + id_file)
         response = rosApi(ip, user, passwd, api_command)
-        print(response)
+        #print(response)
 
 
 def restoreSSLApi(file, ip, user, passwd):

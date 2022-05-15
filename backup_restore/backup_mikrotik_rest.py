@@ -59,7 +59,7 @@ def backupRestApi(ip, user, passwd):
     # Deleting file .backup created on device
     else:
 
-        print("deleting backup on device")
+        #print("deleting backup on device")
 
         requests.delete(
             url + "/file/" + filename + ".backup",
