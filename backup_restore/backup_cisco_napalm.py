@@ -17,7 +17,7 @@ def backupNapalm(ip, user, passwd):
     
     # NAPALM call to collect configuration from Cisco IOS device
     driver = get_network_driver("ios")
-    with driver(hostname=ip, username=user, password=passwd) as device:
+    with driver(hostname=ip, username=user, password=passwd, optional_args={'global_delay_factor':2}) as device:
         config = device.get_config(retrieve="running")
         run_conf = config["running"]
 
@@ -57,4 +57,4 @@ def restoreNapalm(file, ip, user, passwd):
         # print("\nDiff:")
         # print(device.compare_config())
         device.commit_config()
-    print("Done.")
+    #print("Done.")
